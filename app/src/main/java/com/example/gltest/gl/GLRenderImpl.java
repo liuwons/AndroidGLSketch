@@ -1,9 +1,12 @@
-package com.example.gltest;
+package com.example.gltest.gl;
 
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import com.example.gltest.FileUtils;
+import com.example.gltest.data.RenderModel;
+import com.example.gltest.shape.Line;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -13,8 +16,18 @@ import javax.microedition.khronos.opengles.GL10;
 public class GLRenderImpl implements GLSurfaceView.Renderer {
     private static String TAG = GLRenderImpl.class.getSimpleName();
 
-    private static final String SHADER_ARROW_VERT = "arrow_vert.glsl";
-    private static final String SHADER_ARROW_FRAG = "arrow_frag.glsl";
+    private static final long FRAME_LOG_INTV = 1000;
+
+    private static final int SIZEOF_FLOAT = 4;
+    private static final int BUFFER_SIZE = 1024;
+
+    private long mLastFrameLogTime = 0;
+    private int mLastFrameCount = 0;
+
+    private static final String SHADER_ARROW_VERT = "line_vert.glsl";
+    private static final String SHADER_ARROW_FRAG = "line_frag.glsl";
+
+    private RenderModel mModel;
 
     private int mProgram;
     private int mWidth;
@@ -22,32 +35,27 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     private Context mContext;
 
     private FloatBuffer mVertexBuffer;
+    private FloatBuffer mColorBuffer;
 
-    float triangleCoords[] = {
-        0.5f,  0.5f, 0.0f, // top
-        -0.5f, -0.5f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.0f  // bottom right
-    };
+    float color[] = { 1.0f, 0f, 0f, 1.0f };
 
-    float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-    public GLRenderImpl(Context context) {
+    public GLRenderImpl(Context context, RenderModel model) {
         mContext = context;
+        mModel = model;
     }
 
     public void initGL() {
         comipleAndLinkProgram();
 
-        //申请底层空间
-        ByteBuffer bb = ByteBuffer.allocateDirect(
-            triangleCoords.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        //将坐标数据转换为FloatBuffer，用以传入给OpenGL ES程序
-        mVertexBuffer = bb.asFloatBuffer();
-        mVertexBuffer.put(triangleCoords);
-        mVertexBuffer.position(0);
+        ByteBuffer vertexByteBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE * 2 * SIZEOF_FLOAT);
+        vertexByteBuffer.order(ByteOrder.nativeOrder());
+        mVertexBuffer = vertexByteBuffer.asFloatBuffer();
 
-        GLES20.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        ByteBuffer colorByteBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE * 4 *SIZEOF_FLOAT);
+        colorByteBuffer.order(ByteOrder.nativeOrder());
+        mColorBuffer = colorByteBuffer.asFloatBuffer();
+
+        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public void resize(int width, int height) {
@@ -73,15 +81,46 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
         GLES20.glUseProgram(mProgram);
 
+        GLES20.glLineWidth(10f);
+
+        mVertexBuffer.position(0);
+        mColorBuffer.position(0);
+        int lineCount = 0;
+        synchronized (mModel) {
+            lineCount = mModel.lines.size();
+            for (Line line : mModel.lines) {
+                mVertexBuffer.put(line.postion);
+                mColorBuffer.put(line.color);
+                mColorBuffer.put(line.color);
+            }
+            if (mModel.currentShape instanceof Line && mModel.currentShape.valid()) {
+                mVertexBuffer.put(((Line)mModel.currentShape).postion);
+                mColorBuffer.put(((Line)mModel.currentShape).color);
+                mColorBuffer.put(((Line)mModel.currentShape).color);
+                lineCount += 1;
+            }
+        }
+
+        mLastFrameCount += 1;
+        if (System.currentTimeMillis() - mLastFrameLogTime > FRAME_LOG_INTV) {
+            Log.d(TAG, "drawFrame  [frame rate]" + mLastFrameCount);
+            mLastFrameLogTime = System.currentTimeMillis();
+            mLastFrameCount = 0;
+        }
+        mVertexBuffer.position(0);
+        mColorBuffer.position(0);
+
         int positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);
-        GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
+        GLES20.glVertexAttribPointer(positionHandle, 2, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
 
         int colorHandle = GLES20.glGetAttribLocation(mProgram, "vColor");
-        GLES20.glUniform4fv(colorHandle, 1, color, 0);
+        GLES20.glEnableVertexAttribArray(colorHandle);
+        GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 0, mColorBuffer);
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLES20.glDrawArrays(GLES20.GL_LINES, 0, lineCount*2);
         GLES20.glDisableVertexAttribArray(positionHandle);
+        GLES20.glDisableVertexAttribArray(colorHandle);
     }
 
     private int loadShader(int shaderType, String shaderSource) {
@@ -113,9 +152,6 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     }
 
     private void comipleAndLinkProgram() {
-
-
-
         String shaderArrowVert = FileUtils.loadAssetFile(mContext, SHADER_ARROW_VERT);
         String shaderArrowFrag = FileUtils.loadAssetFile(mContext, SHADER_ARROW_FRAG);
 
@@ -137,10 +173,6 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
         GLES20.glAttachShader(programObject, vertexShader);
         GLES20.glAttachShader(programObject, fragmentShader);
-
-        // Bind vPosition to attribute 0
-        GLES20.glBindAttribLocation(programObject, 0, "a_position");
-        GLES20.glBindAttribLocation(programObject, 1, "a_texCoords");
 
         // Link the program
         GLES20.glLinkProgram(programObject);

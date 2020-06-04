@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mBtnLine;
     private TextView mBtnOval;
     private TextView mBtnRect;
+    private TextView mBtnPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity
         mBtnOval.setOnClickListener(this);
         mBtnRect = findViewById(R.id.btn_rect);
         mBtnRect.setOnClickListener(this);
+        mBtnPath = findViewById(R.id.btn_path);
+        mBtnPath.setOnClickListener(this);
 
         mSketchView = findViewById(R.id.sketch_view);
         RenderModel model = new RenderModel();
@@ -59,25 +62,36 @@ public class MainActivity extends AppCompatActivity
             mBtnLine.setSelected(false);
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(false);
+            mBtnPath.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_ARROW);
         } else if (v.getId() == R.id.btn_line) {
             mBtnArrow.setSelected(false);
             mBtnLine.setSelected(true);
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(false);
+            mBtnPath.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_LINE);
         } else if (v.getId() == R.id.btn_oval) {
             mBtnArrow.setSelected(false);
             mBtnLine.setSelected(false);
             mBtnOval.setSelected(true);
             mBtnRect.setSelected(false);
+            mBtnPath.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_OVAL);
         } else if (v.getId() == R.id.btn_rect) {
             mBtnArrow.setSelected(false);
             mBtnLine.setSelected(false);
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(true);
+            mBtnPath.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_RECT);
+        } else if (v.getId() == R.id.btn_path) {
+            mBtnArrow.setSelected(false);
+            mBtnLine.setSelected(false);
+            mBtnOval.setSelected(false);
+            mBtnRect.setSelected(false);
+            mBtnPath.setSelected(true);
+            mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_PATH);
         }
     }
 

@@ -41,6 +41,7 @@ public class SketchTextureView extends TextureView implements TextureView.Surfac
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         Log.d(TAG, "onSurfaceTextureAvailable:  [w]" + width + "  [h]" + height);
+
         mSketchProcessor.onAvailable(width, height);
         if (mGLThread != null) {
             mGLThread.finish();

@@ -5,10 +5,14 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import com.example.gltest.data.RenderModel;
+import com.example.gltest.renderer.BaseRenderer;
 import com.example.gltest.renderer.LineRenderer;
+import com.example.gltest.renderer.PathRenderer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -28,7 +32,7 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     private FloatBuffer mVertexBuffer;
     private FloatBuffer mColorBuffer;
 
-    private LineRenderer mLineRender;
+    private List<BaseRenderer> mRenderers = new ArrayList<>(10);
 
     public GLRenderImpl(Context context, RenderModel model) {
         mContext = context;
@@ -45,7 +49,8 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
         mColorBuffer = colorByteBuffer.asFloatBuffer();
 
 
-        mLineRender = new LineRenderer(mContext, mModel, mVertexBuffer, mColorBuffer);
+        mRenderers.add(new LineRenderer(mContext, mModel, mVertexBuffer, mColorBuffer));
+        mRenderers.add(new PathRenderer(mContext, mModel, mVertexBuffer, mColorBuffer));
 
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
@@ -58,8 +63,12 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Log.d(TAG, "onSurfaceCreated");
+
         initGL();
-        mLineRender.onSurfaceCreated(gl, config);
+        for (BaseRenderer renderer : mRenderers) {
+            renderer.onSurfaceCreated(gl, config);
+        }
     }
 
     @Override
@@ -68,12 +77,18 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
         resize(width, height);
         GLES20.glViewport(0, 0, mWidth, mHeight);
-        mLineRender.onSurfaceChanged(gl, width, height);
+
+        for (BaseRenderer renderer : mRenderers) {
+            renderer.onSurfaceChanged(gl, width, height);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        mLineRender.onDrawFrame(gl);
+
+        for (BaseRenderer renderer : mRenderers) {
+            renderer.onDrawFrame(gl);
+        }
     }
 }

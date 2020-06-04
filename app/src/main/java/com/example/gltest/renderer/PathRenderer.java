@@ -1,32 +1,34 @@
 package com.example.gltest.renderer;
 
 import android.content.Context;
+import android.opengl.GLES10;
 import android.opengl.GLES20;
 import com.example.gltest.data.RenderModel;
 import com.example.gltest.shape.Line;
-import com.example.gltest.shape.Rect;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class LineRenderer extends BaseRenderer {
-    private static final String TAG = LineRenderer.class.getSimpleName();
+public class PathRenderer extends BaseRenderer {
 
-    private static final String SHADER_LINE_VERT = "line_vert.glsl";
-    private static final String SHADER_LINE_FRAG = "line_frag.glsl";
+    private static final String SHADER_BZ_VERT = "bz_vert.glsl";
+    private static final String SHADER_BZ_FRAG = "bz_frag.glsl";
 
-    public LineRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, FloatBuffer colorBuffer) {
+    public PathRenderer(Context context,
+                        RenderModel model,
+                        FloatBuffer vertexBuffer,
+                        FloatBuffer colorBuffer) {
         super(context, model, vertexBuffer, colorBuffer);
     }
 
     @Override
     protected String getVertexShaderAssetPath() {
-        return SHADER_LINE_VERT;
+        return SHADER_BZ_VERT;
     }
 
     @Override
     protected String getFragmentShaderAssetPath() {
-        return SHADER_LINE_FRAG;
+        return SHADER_BZ_FRAG;
     }
 
     @Override
@@ -39,19 +41,6 @@ public class LineRenderer extends BaseRenderer {
         super.onSurfaceChanged(gl, width, height);
     }
 
-    private void dumpLineShaderData(Line line) {
-        mVertexBuffer.put(line.postion);
-        mColorBuffer.put(line.color);
-        mColorBuffer.put(line.color);
-    }
-
-    private void dumpRectShaderData(Rect rect) {
-        mVertexBuffer.put(rect.dumpVertex());
-        for (int i = 0; i < 8; i ++) {
-            mColorBuffer.put(rect.color);
-        }
-    }
-
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
@@ -59,29 +48,23 @@ public class LineRenderer extends BaseRenderer {
         GLES20.glUseProgram(mProgram);
 
         GLES20.glLineWidth(10f);
+        GLES20.glHint(GLES10.GL_LINE_SMOOTH_HINT, GL10.GL_NICEST);
 
         mVertexBuffer.position(0);
         mColorBuffer.position(0);
         int lineCount = 0;
         synchronized (mModel) {
-            // lines
-            lineCount += mModel.lines.size();
+            lineCount = mModel.lines.size();
             for (Line line : mModel.lines) {
-                dumpLineShaderData(line);
+                mVertexBuffer.put(line.postion);
+                mColorBuffer.put(line.color);
+                mColorBuffer.put(line.color);
             }
-
-            // rectangles
-            lineCount += mModel.rects.size() * 4;
-            for (Rect rect : mModel.rects) {
-                dumpRectShaderData(rect);
-            }
-
             if (mModel.currentShape instanceof Line && mModel.currentShape.valid()) {
-                dumpLineShaderData((Line)mModel.currentShape);
+                mVertexBuffer.put(((Line)mModel.currentShape).postion);
+                mColorBuffer.put(((Line)mModel.currentShape).color);
+                mColorBuffer.put(((Line)mModel.currentShape).color);
                 lineCount += 1;
-            } else if (mModel.currentShape instanceof Rect && mModel.currentShape.valid()) {
-                dumpRectShaderData((Rect)mModel.currentShape);
-                lineCount += 4;
             }
         }
 

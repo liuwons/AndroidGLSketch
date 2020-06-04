@@ -78,8 +78,12 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     }
 
     private void comipleAndLinkProgram() {
-        String shaderVert = FileUtils.loadAssetFile(mContext, getVertexShaderAssetPath());
-        String shaderFrag = FileUtils.loadAssetFile(mContext, getFragmentShaderAssetPath());
+        String shaderVertAssetPath = getVertexShaderAssetPath();
+        String shaderFragAssetPath = getFragmentShaderAssetPath();
+        Log.d(TAG, "load shader:  [vert]" + shaderVertAssetPath + "  [frag]" + shaderFragAssetPath);
+
+        String shaderVert = FileUtils.loadAssetFile(mContext, shaderVertAssetPath);
+        String shaderFrag = FileUtils.loadAssetFile(mContext, shaderFragAssetPath);
 
         int vertexShader;
         int fragmentShader;

@@ -7,6 +7,7 @@ import com.example.gltest.shape.Arrow;
 import com.example.gltest.shape.BaseShape;
 import com.example.gltest.shape.Line;
 import com.example.gltest.shape.Oval;
+import com.example.gltest.shape.Path;
 import com.example.gltest.shape.Rect;
 
 public class SketchProcessor implements View.OnTouchListener {
@@ -98,6 +99,9 @@ public class SketchProcessor implements View.OnTouchListener {
         } else if (mCurrentMode == SketchMode.MODE_OVAL) {
             Log.d(TAG, "create oval");
             return new Oval(getColor());
+        } else if(mCurrentMode == SketchMode.MODE_PATH) {
+            Log.d(TAG, "create path");
+            return new Path(getColor());
         } else {
             Log.d(TAG, "create rect");
             return new Rect(getColor());
@@ -123,7 +127,8 @@ public class SketchProcessor implements View.OnTouchListener {
         MODE_ARROW,
         MODE_LINE,
         MODE_OVAL,
-        MODE_RECT
+        MODE_RECT,
+        MODE_PATH
     }
 
     public enum SketchColor {

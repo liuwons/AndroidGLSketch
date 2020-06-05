@@ -1,10 +1,10 @@
 package com.example.gltest.shape;
 
-import com.example.gltest.geom.Position;
+import android.graphics.PointF;
 
 public class Arrow extends BaseShape {
-    public Position start;
-    public Position end;
+    public PointF start;
+    public PointF end;
 
     public Arrow(float[] c) {
         color = c;

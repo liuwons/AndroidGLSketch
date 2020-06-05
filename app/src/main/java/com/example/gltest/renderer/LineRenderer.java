@@ -4,6 +4,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import com.example.gltest.data.RenderModel;
 import com.example.gltest.shape.Line;
+import com.example.gltest.shape.Path;
 import com.example.gltest.shape.Rect;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -52,6 +53,10 @@ public class LineRenderer extends BaseRenderer {
         }
     }
 
+    private int dumpPathShaderData(Path path) {
+        return path.dumpLineData(mVertexBuffer, mColorBuffer);
+    }
+
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
@@ -62,27 +67,34 @@ public class LineRenderer extends BaseRenderer {
 
         mVertexBuffer.position(0);
         mColorBuffer.position(0);
+
+
         int lineCount = 0;
-        synchronized (mModel) {
-            // lines
-            lineCount += mModel.lines.size();
-            for (Line line : mModel.lines) {
-                dumpLineShaderData(line);
-            }
+        // lines
+        lineCount += mModel.lines.size();
+        for (Line line : mModel.lines) {
+            dumpLineShaderData(line);
+        }
 
-            // rectangles
-            lineCount += mModel.rects.size() * 4;
-            for (Rect rect : mModel.rects) {
-                dumpRectShaderData(rect);
-            }
+        // rectangles
+        lineCount += mModel.rects.size() * 4;
+        for (Rect rect : mModel.rects) {
+            dumpRectShaderData(rect);
+        }
 
-            if (mModel.currentShape instanceof Line && mModel.currentShape.valid()) {
-                dumpLineShaderData((Line)mModel.currentShape);
-                lineCount += 1;
-            } else if (mModel.currentShape instanceof Rect && mModel.currentShape.valid()) {
-                dumpRectShaderData((Rect)mModel.currentShape);
-                lineCount += 4;
-            }
+        // paths
+        for (Path path: mModel.paths) {
+            lineCount += dumpPathShaderData(path);
+        }
+
+        if (mModel.currentShape instanceof Line && mModel.currentShape.valid()) {
+            dumpLineShaderData((Line)mModel.currentShape);
+            lineCount += 1;
+        } else if (mModel.currentShape instanceof Rect && mModel.currentShape.valid()) {
+            dumpRectShaderData((Rect)mModel.currentShape);
+            lineCount += 4;
+        } else if (mModel.currentShape instanceof Path && mModel.currentShape.valid()) {
+            lineCount += dumpPathShaderData((Path)mModel.currentShape);
         }
 
         mVertexBuffer.position(0);

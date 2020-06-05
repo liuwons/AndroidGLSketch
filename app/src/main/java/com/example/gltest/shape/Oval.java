@@ -1,9 +1,9 @@
 package com.example.gltest.shape;
 
-import com.example.gltest.geom.Position;
+import android.graphics.PointF;
 
 public class Oval extends BaseShape {
-    public Position position;
+    public PointF position;
     public float longAxis;
     public float shortAxis;
 

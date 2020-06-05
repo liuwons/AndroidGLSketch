@@ -20,12 +20,12 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     private static String TAG = GLRenderImpl.class.getSimpleName();
 
     private static final int SIZEOF_FLOAT = 4;
-    private static final int BUFFER_SIZE = 1024;
+    private static final int BUFFER_SIZE = 1024 * 1024;
 
     private int mWidth;
     private int mHeight;
 
-    private RenderModel mModel;
+    private final RenderModel mModel;
 
     private Context mContext;
 
@@ -87,8 +87,11 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        for (BaseRenderer renderer : mRenderers) {
-            renderer.onDrawFrame(gl);
+        synchronized (mModel) {
+
+            for (BaseRenderer renderer : mRenderers) {
+                renderer.onDrawFrame(gl);
+            }
         }
     }
 }

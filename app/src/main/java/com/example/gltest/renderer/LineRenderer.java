@@ -40,23 +40,6 @@ public class LineRenderer extends BaseRenderer {
         super.onSurfaceChanged(gl, width, height);
     }
 
-    private void dumpLineShaderData(Line line) {
-        mVertexBuffer.put(line.postion);
-        mColorBuffer.put(line.color);
-        mColorBuffer.put(line.color);
-    }
-
-    private void dumpRectShaderData(Rect rect) {
-        mVertexBuffer.put(rect.dumpVertex());
-        for (int i = 0; i < 8; i ++) {
-            mColorBuffer.put(rect.color);
-        }
-    }
-
-    private int dumpPathShaderData(Path path) {
-        return path.dumpLineData(mVertexBuffer, mColorBuffer);
-    }
-
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
@@ -71,30 +54,28 @@ public class LineRenderer extends BaseRenderer {
 
         int lineCount = 0;
         // lines
-        lineCount += mModel.lines.size();
         for (Line line : mModel.lines) {
-            dumpLineShaderData(line);
+            lineCount += line.dumpLineData(mVertexBuffer, mColorBuffer);
         }
 
         // rectangles
-        lineCount += mModel.rects.size() * 4;
         for (Rect rect : mModel.rects) {
-            dumpRectShaderData(rect);
+            lineCount += rect.dumpLineData(mVertexBuffer, mColorBuffer);
         }
 
         // paths
         for (Path path: mModel.paths) {
-            lineCount += dumpPathShaderData(path);
+            lineCount += path.dumpLineData(mVertexBuffer, mColorBuffer);
         }
 
-        if (mModel.currentShape instanceof Line && mModel.currentShape.valid()) {
-            dumpLineShaderData((Line)mModel.currentShape);
-            lineCount += 1;
-        } else if (mModel.currentShape instanceof Rect && mModel.currentShape.valid()) {
-            dumpRectShaderData((Rect)mModel.currentShape);
-            lineCount += 4;
-        } else if (mModel.currentShape instanceof Path && mModel.currentShape.valid()) {
-            lineCount += dumpPathShaderData((Path)mModel.currentShape);
+        if (mModel.currentShape != null && mModel.currentShape.valid()) {
+            if (mModel.currentShape instanceof Line) {
+                lineCount += ((Line)mModel.currentShape).dumpLineData(mVertexBuffer, mColorBuffer);
+            } else if (mModel.currentShape instanceof Rect) {
+                lineCount += ((Rect)mModel.currentShape).dumpLineData(mVertexBuffer, mColorBuffer);
+            } else if (mModel.currentShape instanceof Path) {
+                lineCount += ((Path)mModel.currentShape).dumpLineData(mVertexBuffer, mColorBuffer);
+            }
         }
 
         mVertexBuffer.position(0);

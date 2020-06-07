@@ -66,10 +66,23 @@ public class PathRenderer extends BaseRenderer {
         GLES20.glLineWidth(10f);
 
         for (Path path : mModel.paths) {
-            List<Path.CubicBezier> bezierLst = path.calcBezierLines();
-            for (Path.CubicBezier bezier : bezierLst) {
-                drawCubicBezierLine(path.color, bezier.pos, bezier.ctrl);
-            }
+            drawPath(path);
+        }
+
+        if (mModel.currentShape != null
+            && mModel.currentShape instanceof Path
+            && mModel.currentShape.valid()) {
+            drawPath((Path) mModel.currentShape);
+        }
+    }
+
+    private void drawPath(Path path) {
+        if (path == null || !path.valid()) {
+            return;
+        }
+        List<Path.CubicBezier> bezierLst = path.calcBezierLines();
+        for (Path.CubicBezier bezier : bezierLst) {
+            drawCubicBezierLine(path.color, bezier.pos, bezier.ctrl);
         }
     }
 

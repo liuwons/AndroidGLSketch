@@ -69,7 +69,7 @@ public class Path extends BaseShape {
     }
 
     public int dumpLineData(FloatBuffer vertexBuffer, FloatBuffer colorBuffer) {
-        if (points.size() < 2) {
+        if (!valid()) {
             return 0;
         }
 

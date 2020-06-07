@@ -1,5 +1,7 @@
 package com.example.gltest.shape;
 
+import java.nio.FloatBuffer;
+
 public class Rect extends BaseShape {
     public float[] points = {-2f, -2f, -2f, -2f};  // a.x, a.y, b.x, b.y
 
@@ -37,6 +39,20 @@ public class Rect extends BaseShape {
     @Override
     public boolean valid() {
         return mMoved && (points[0] != points[2] || points[1] != points[3]);
+    }
+
+    public int dumpLineData(FloatBuffer vertexBuffer, FloatBuffer colorBuffer) {
+        if (!valid()) {
+            return 0;
+        }
+
+        vertexBuffer.put(dumpVertex());
+
+        for (int i = 0; i < 8; i ++) {
+            colorBuffer.put(color);
+        }
+
+        return 4;
     }
 
     public float[] dumpVertex() {

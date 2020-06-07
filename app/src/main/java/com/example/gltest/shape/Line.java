@@ -1,6 +1,7 @@
 package com.example.gltest.shape;
 
 import android.util.Log;
+import java.nio.FloatBuffer;
 
 public class Line extends BaseShape {
     private static final String TAG = Line.class.getSimpleName();
@@ -40,5 +41,16 @@ public class Line extends BaseShape {
     @Override
     public boolean valid() {
         return mStarted && mMoved;
+    }
+
+    public int dumpLineData(FloatBuffer vertexBuffer, FloatBuffer colorBuffer) {
+        if (!valid()) {
+            return 0;
+        }
+
+        vertexBuffer.put(postion);
+        colorBuffer.put(color);
+        colorBuffer.put(color);
+        return 1;
     }
 }

@@ -21,7 +21,7 @@ public class PathRenderer extends BaseRenderer {
     private int mUniformBzCtrlHandle;
     private int mAttrTDataHandle;
 
-    private static final int BZ_ARRAY_LEN = 128;
+    private static final int BZ_ARRAY_LEN = 8;
     private float[] mBzTValArray = new float[BZ_ARRAY_LEN];
 
     public PathRenderer(Context context,
@@ -32,9 +32,10 @@ public class PathRenderer extends BaseRenderer {
 
         mBzTValArray[0] = 0f;
         float stride = 1.0f / BZ_ARRAY_LEN;
-        for (int i = 1; i < BZ_ARRAY_LEN; i ++) {
+        for (int i = 1; i < BZ_ARRAY_LEN-1; i ++) {
             mBzTValArray[i] = mBzTValArray[i-1] + stride;
         }
+        mBzTValArray[BZ_ARRAY_LEN-1] = 1.0f;
     }
 
     @Override
@@ -103,7 +104,7 @@ public class PathRenderer extends BaseRenderer {
         mVertexBuffer.position(0);
         GLES20.glEnableVertexAttribArray(mAttrTDataHandle);
         GLES20.glVertexAttribPointer(mAttrTDataHandle, 1, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, BZ_ARRAY_LEN);
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, BZ_ARRAY_LEN);
 
         GLES20.glDisableVertexAttribArray(mAttrTDataHandle);
     }

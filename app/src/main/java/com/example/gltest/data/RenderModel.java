@@ -9,6 +9,8 @@ import com.example.gltest.shape.Rect;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RenderModel {
+    private static final String TAG = RenderModel.class.getSimpleName();
+
     public CopyOnWriteArrayList<Arrow> arrows = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Line> lines = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<Oval> ovals = new CopyOnWriteArrayList<>();
@@ -17,7 +19,7 @@ public class RenderModel {
 
     public BaseShape currentShape;
 
-    public void archieve() {
+    public void archive() {
         if (currentShape == null) {
             return;
         }

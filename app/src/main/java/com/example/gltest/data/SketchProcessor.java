@@ -57,23 +57,25 @@ public class SketchProcessor implements View.OnTouchListener {
         x = 2 * x / mWidth - 1.0f;
         y = 1.0f - 2 * y / mHeight;
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (mRenderData.currentShape != null) {
-                mRenderData.archieve();
-            }
-            mRenderData.currentShape = createShape();
-            mRenderData.currentShape.onStart(x, y);
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (mRenderData.currentShape == null) {
+        synchronized (mRenderData) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (mRenderData.currentShape != null) {
+                    mRenderData.archive();
+                }
                 mRenderData.currentShape = createShape();
                 mRenderData.currentShape.onStart(x, y);
-            } else {
-                mRenderData.currentShape.onMove(x, y);
-            }
-        } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-            if (mRenderData.currentShape != null) {
-                mRenderData.currentShape.onFinish(x, y);
-                mRenderData.archieve();
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                if (mRenderData.currentShape == null) {
+                    mRenderData.currentShape = createShape();
+                    mRenderData.currentShape.onStart(x, y);
+                } else {
+                    mRenderData.currentShape.onMove(x, y);
+                }
+            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                if (mRenderData.currentShape != null) {
+                    mRenderData.currentShape.onFinish(x, y);
+                    mRenderData.archive();
+                }
             }
         }
 

@@ -11,7 +11,7 @@ public class Line extends BaseShape {
     private boolean mMoved = false;
 
     public Line(float[] c) {
-        color = c;
+        System.arraycopy(c, 0, color, 0, color.length);
     }
 
     @Override

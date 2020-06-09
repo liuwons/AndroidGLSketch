@@ -1,8 +1,6 @@
-uniform vec4 u_Color;
-uniform vec4 u_BzPos;
-uniform vec4 u_BzCtrl;
-
-
+attribute vec4 a_Color;
+attribute vec4 a_BzPos;
+attribute vec4 a_BzCtrl;
 attribute float a_TData;// Bezier t variable
 
 varying vec4 v_Color;
@@ -24,11 +22,11 @@ void main()
     vec4 pos;
     pos.w = 1.0;
 
-    vec2 p0 = u_BzPos.xy;
-    vec2 p3 = u_BzPos.zw;
+    vec2 p0 = a_BzPos.xy;
+    vec2 p3 = a_BzPos.zw;
 
-    vec2 p1 = u_BzCtrl.xy;
-    vec2 p2 = u_BzCtrl.zw;
+    vec2 p1 = a_BzCtrl.xy;
+    vec2 p2 = a_BzCtrl.zw;
 
     float t = a_TData;
 
@@ -36,7 +34,7 @@ void main()
 
     pos.xy = bPoint;
 
-    v_Color = u_Color;
+    v_Color = a_Color;
 
     gl_Position = pos;
     gl_PointSize = 10.0;

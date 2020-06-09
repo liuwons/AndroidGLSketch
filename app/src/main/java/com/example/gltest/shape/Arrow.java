@@ -7,7 +7,7 @@ public class Arrow extends BaseShape {
     public PointF end;
 
     public Arrow(float[] c) {
-        color = c;
+        System.arraycopy(c, 0, color, 0, color.length);
     }
 
     @Override

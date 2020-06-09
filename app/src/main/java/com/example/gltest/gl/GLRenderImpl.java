@@ -87,11 +87,17 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-        synchronized (mModel) {
+        long t = System.currentTimeMillis();
+        mModel.prepareDrawingData();
 
-            for (BaseRenderer renderer : mRenderers) {
-                renderer.onDrawFrame(gl);
-            }
+        long prepare = System.currentTimeMillis() - t;
+
+        for (BaseRenderer renderer : mRenderers) {
+            renderer.onDrawFrame(gl);
+        }
+        t = System.currentTimeMillis() - t;
+        if (t > 5) {
+            Log.i("SketchPro", "draw frame cost: " + t + "  [prepare]" + prepare);
         }
     }
 }

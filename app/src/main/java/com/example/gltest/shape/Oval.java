@@ -8,7 +8,7 @@ public class Oval extends BaseShape {
     public float shortAxis;
 
     public Oval(float[] c) {
-        color = c;
+        System.arraycopy(c, 0, color, 0, color.length);
     }
 
     @Override

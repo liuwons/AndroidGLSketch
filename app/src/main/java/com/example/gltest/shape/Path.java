@@ -18,7 +18,7 @@ public class Path extends BaseShape {
     private volatile boolean mBeziersNeedUpdate = true;
 
     public Path(float[] c) {
-        color = c;
+        System.arraycopy(c, 0, color, 0, color.length);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.gltest.renderer;
 
 import android.content.Context;
+import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.example.gltest.data.RenderModel;
@@ -16,12 +17,12 @@ public class PathRenderer extends BaseRenderer {
     private static final String SHADER_BZ_VERT = "bz_vert.glsl";
     private static final String SHADER_BZ_FRAG = "bz_frag.glsl";
 
-    private int mUniformColorHandle;
-    private int mUniformBzPosHandle;
-    private int mUniformBzCtrlHandle;
+    private int mAttrColorHandle;
+    private int mAttrBzPosHandle;
+    private int mAttrBzCtrlHandle;
     private int mAttrTDataHandle;
 
-    private static final int BZ_ARRAY_LEN = 8;
+    private static final int BZ_ARRAY_LEN = 4;
     private float[] mBzTValArray = new float[BZ_ARRAY_LEN];
 
     public PathRenderer(Context context,
@@ -62,51 +63,71 @@ public class PathRenderer extends BaseRenderer {
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
 
-        GLES20.glUseProgram(mProgram);
+        mVertexBuffer.position(0);
 
-        GLES20.glLineWidth(10f);
-
+        int pointCount = 0;
         for (Path path : mModel.paths) {
-            drawPath(path);
+            pointCount += dumpPath(path);
         }
 
         if (mModel.currentShape != null
             && mModel.currentShape instanceof Path
             && mModel.currentShape.valid()) {
-            drawPath((Path) mModel.currentShape);
+            pointCount += dumpPath((Path) mModel.currentShape);
         }
-    }
 
-    private void drawPath(Path path) {
-        if (path == null || !path.valid()) {
-            return;
-        }
-        List<Path.CubicBezier> bezierLst = path.calcBezierLines();
-        for (Path.CubicBezier bezier : bezierLst) {
-            drawCubicBezierLine(path.color, bezier.pos, bezier.ctrl);
-        }
-    }
+        GLES20.glUseProgram(mProgram);
+        GLES20.glLineWidth(10f);
 
-    private void drawCubicBezierLine(float[] color, float[] pos, float[] ctrl) {
-        Log.d(TAG, "drawCubicBezierLine:  [color]" + floatArr2Str(color) + "  [pos]" + floatArr2Str(pos) + "  [ctrl]" + floatArr2Str(ctrl));
-        mUniformColorHandle = GLES20.glGetUniformLocation(mProgram, "u_Color");
-        mUniformBzPosHandle = GLES20.glGetUniformLocation(mProgram, "u_BzPos");
-        mUniformBzCtrlHandle = GLES20.glGetUniformLocation(mProgram, "u_BzCtrl");
+        mAttrColorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
+        mAttrBzPosHandle = GLES20.glGetAttribLocation(mProgram, "a_BzPos");
+        mAttrBzCtrlHandle = GLES20.glGetAttribLocation(mProgram, "a_BzCtrl");
         mAttrTDataHandle = GLES20.glGetAttribLocation(mProgram, "a_TData");
 
-        GLES20.glUniform4fv(mUniformColorHandle, 1, color, 0);
-        GLES20.glUniform4fv(mUniformBzPosHandle, 1, pos, 0);
-        GLES20.glUniform4fv(mUniformBzCtrlHandle, 1, ctrl, 0);
-
         mVertexBuffer.position(0);
-        mVertexBuffer.put(mBzTValArray);
+        GLES20.glEnableVertexAttribArray(mAttrColorHandle);
+        GLES20.glVertexAttribPointer(mAttrColorHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
 
-        mVertexBuffer.position(0);
+        mVertexBuffer.position(4);
+        GLES20.glEnableVertexAttribArray(mAttrBzPosHandle);
+        GLES20.glVertexAttribPointer(mAttrBzPosHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+
+        mVertexBuffer.position(8);
+        GLES20.glEnableVertexAttribArray(mAttrBzCtrlHandle);
+        GLES20.glVertexAttribPointer(mAttrBzCtrlHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+
+        mVertexBuffer.position(12);
         GLES20.glEnableVertexAttribArray(mAttrTDataHandle);
-        GLES20.glVertexAttribPointer(mAttrTDataHandle, 1, GLES20.GL_FLOAT, false, 0, mVertexBuffer);
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, BZ_ARRAY_LEN);
+        GLES20.glVertexAttribPointer(mAttrTDataHandle, 1, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
 
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, pointCount);
+
+        GLES20.glDisableVertexAttribArray(mAttrColorHandle);
+        GLES20.glDisableVertexAttribArray(mAttrBzPosHandle);
+        GLES20.glDisableVertexAttribArray(mAttrBzCtrlHandle);
         GLES20.glDisableVertexAttribArray(mAttrTDataHandle);
+    }
+
+    private int dumpPath(Path path) {
+        if (path == null || !path.valid()) {
+            return 0;
+        }
+        int pointCount = 0;
+        List<Path.CubicBezier> bezierLst = path.calcBezierLines();
+        for (Path.CubicBezier bezier : bezierLst) {
+            pointCount += dumpCubicBezierLine(path.color, bezier.pos, bezier.ctrl);
+        }
+        return pointCount;
+    }
+
+    private int dumpCubicBezierLine(float[] color, float[] pos, float[] ctrl) {
+        for (int i = 0; i < BZ_ARRAY_LEN; i ++) {
+            mVertexBuffer.put(color);
+            mVertexBuffer.put(pos);
+            mVertexBuffer.put(ctrl);
+            mVertexBuffer.put(mBzTValArray[i]);
+        }
+        return BZ_ARRAY_LEN;
     }
 
     private String floatArr2Str(float[] data) {

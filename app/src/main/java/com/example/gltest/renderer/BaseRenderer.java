@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.gltest.FileUtils;
 import com.example.gltest.data.RenderModel;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -16,14 +17,16 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     protected Context mContext;
     protected RenderModel mModel;
     protected FloatBuffer mVertexBuffer;
+    protected IntBuffer mIndexBuffer;
     protected FloatBuffer mColorBuffer;
 
     protected int mProgram;
 
-    public BaseRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, FloatBuffer colorBuffer) {
+    public BaseRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, IntBuffer indexBuffer, FloatBuffer colorBuffer) {
         mContext = context;
         mModel = model;
         mVertexBuffer = vertexBuffer;
+        mIndexBuffer = indexBuffer;
         mColorBuffer = colorBuffer;
     }
 

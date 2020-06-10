@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.gltest.data.RenderModel;
 import com.example.gltest.shape.Path;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -28,8 +29,9 @@ public class PathRenderer extends BaseRenderer {
     public PathRenderer(Context context,
                         RenderModel model,
                         FloatBuffer vertexBuffer,
+                        IntBuffer indexBuffer,
                         FloatBuffer colorBuffer) {
-        super(context, model, vertexBuffer, colorBuffer);
+        super(context, model, vertexBuffer, indexBuffer, colorBuffer);
 
         mBzTValArray[0] = 0f;
         float stride = 1.0f / BZ_ARRAY_LEN;
@@ -76,8 +78,11 @@ public class PathRenderer extends BaseRenderer {
             pointCount += dumpPath((Path) mModel.currentShape);
         }
 
+        if (pointCount == 0) {
+            return;
+        }
+
         GLES20.glUseProgram(mProgram);
-        GLES20.glLineWidth(10f);
 
         mAttrColorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
         mAttrBzPosHandle = GLES20.glGetAttribLocation(mProgram, "a_BzPos");

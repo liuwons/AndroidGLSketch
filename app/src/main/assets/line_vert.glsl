@@ -1,3 +1,5 @@
+uniform mat4 u_Matrix;
+
 attribute vec4 vPosition;
 attribute vec4 vColor;
 attribute float vLineWidth;
@@ -34,5 +36,5 @@ void main() {
         y = end.y - scaledOffsetY;
     }
 
-    gl_Position = vec4(x, y, 0, 1.0);
+    gl_Position = u_Matrix * vec4(x, y, 0, 1.0);
 }

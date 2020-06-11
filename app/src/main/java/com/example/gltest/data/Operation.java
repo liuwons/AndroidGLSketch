@@ -7,6 +7,7 @@ public class Operation {
     public enum Command {
         CHANGE_COLOR,
         CHANGE_SHAPE,
+        CHANGE_AXIS,
         TOUCH_EVENT
     }
 

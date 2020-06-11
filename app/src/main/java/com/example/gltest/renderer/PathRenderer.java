@@ -84,6 +84,9 @@ public class PathRenderer extends BaseRenderer {
 
         GLES20.glUseProgram(mProgram);
 
+        int matrixHandle = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
+        GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mModel.currentMatrix, 0);
+
         mAttrColorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
         mAttrBzPosHandle = GLES20.glGetAttribLocation(mProgram, "a_BzPos");
         mAttrBzCtrlHandle = GLES20.glGetAttribLocation(mProgram, "a_BzCtrl");

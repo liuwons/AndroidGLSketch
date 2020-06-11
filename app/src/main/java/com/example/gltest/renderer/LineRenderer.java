@@ -47,6 +47,9 @@ public class LineRenderer extends BaseRenderer {
 
         GLES20.glUseProgram(mProgram);
 
+        int matrixHandle = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
+        GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mModel.currentMatrix, 0);
+
         mVertexBuffer.position(0);
         mIndexBuffer.position(0);
         mColorBuffer.position(0);
@@ -94,7 +97,6 @@ public class LineRenderer extends BaseRenderer {
         int indexCount = mIndexBuffer.position();
         mIndexBuffer.position(0);
 
-        Log.d(TAG, "index count: " + indexCount);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, indexCount, GLES20.GL_UNSIGNED_INT, mIndexBuffer);
 
         GLES20.glDisableVertexAttribArray(positionHandle);

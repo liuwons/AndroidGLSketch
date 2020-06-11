@@ -1,6 +1,7 @@
 package com.example.gltest.data;
 
 import android.graphics.PointF;
+import android.opengl.Matrix;
 import android.util.Log;
 import com.example.gltest.shape.Arrow;
 import com.example.gltest.shape.BaseShape;
@@ -12,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * 渲染数据模型
+ * 对model的修改都尽量放到渲染线程
+ */
 public class RenderModel {
     private static final String TAG = RenderModel.class.getSimpleName();
 
@@ -30,6 +35,7 @@ public class RenderModel {
     public BaseShape currentShape;
     public float[] currentColor = new float[4];
     public SketchProcessor.SketchMode currentMode = SketchProcessor.SketchMode.MODE_LINE;
+    public float[] currentMatrix = new float[16];
 
     public ConcurrentLinkedQueue<Operation> operations = new ConcurrentLinkedQueue<>();
 
@@ -37,6 +43,7 @@ public class RenderModel {
 
     public RenderModel() {
         System.arraycopy(COLOR_RED, 0, currentColor, 0, currentColor.length);
+        Matrix.orthoM(currentMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
     }
 
     public void appendOpreation(Operation operation) {
@@ -81,6 +88,14 @@ public class RenderModel {
         appendOpreation(operation);
     }
 
+    public void changeAxis(PointF axis) {
+        Log.d(TAG, "changeAxis:  [x]" + axis.x + "  [y]" + axis.y);
+        Operation operation = obtain();
+        operation.command = Operation.Command.CHANGE_AXIS;
+        operation.position.set(axis);
+        appendOpreation(operation);
+    }
+
     public void prepareDrawingData() {
         while (true) {
             Operation operation = operations.poll();
@@ -97,6 +112,9 @@ public class RenderModel {
             System.arraycopy(operation.color, 0, currentColor, 0, currentColor.length);
         } else if (operation.command == Operation.Command.CHANGE_SHAPE) {
             currentMode = operation.mode;
+        } else if (operation.command == Operation.Command.CHANGE_AXIS) {
+            Matrix.orthoM(currentMatrix, 0, -operation.position.x, operation.position.x,
+                -operation.position.y, operation.position.y, -1f, 1f);
         } else if (operation.command == Operation.Command.TOUCH_EVENT) {
             if (operation.touchAction == Operation.TouchAction.DOWN) {
                 onTouchDown(operation.position);

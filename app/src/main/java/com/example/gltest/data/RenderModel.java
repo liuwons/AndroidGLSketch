@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RenderModel {
     private static final String TAG = RenderModel.class.getSimpleName();
 
+    private static final float LINE_BORDER_WIDTH_PX = 1f;
+
     private static final float[] COLOR_RED = {0.96f, 0.29f, 0.27f, 1.0f};
     private static final float[] COLOR_YELLOW = {1.0f, 0.78f, 0.04f, 1.0f};
     private static final float[] COLOR_GREEN = {0.2f, 0.78f, 0.14f, 1.0f};
@@ -36,6 +38,10 @@ public class RenderModel {
     public float[] currentColor = new float[4];
     public SketchProcessor.SketchMode currentMode = SketchProcessor.SketchMode.MODE_LINE;
     public float[] currentMatrix = new float[16];
+    public float lineBorderWidth = 0f;  // 抗锯齿运算时,线条两边alpha渐变的宽度
+    public float viewWidth = 0;
+    public float viewHeight = 0;
+    public float axisScale = 0f;  // (坐标宽度 / view宽度)
 
     public ConcurrentLinkedQueue<Operation> operations = new ConcurrentLinkedQueue<>();
 
@@ -88,11 +94,13 @@ public class RenderModel {
         appendOpreation(operation);
     }
 
-    public void changeAxis(PointF axis) {
+    public void changeAxis(PointF axis, float viewWidth, float viewHeight) {
         Log.d(TAG, "changeAxis:  [x]" + axis.x + "  [y]" + axis.y);
         Operation operation = obtain();
         operation.command = Operation.Command.CHANGE_AXIS;
         operation.position.set(axis);
+        operation.color[0] = viewWidth;
+        operation.color[1] = viewHeight;
         appendOpreation(operation);
     }
 
@@ -115,6 +123,13 @@ public class RenderModel {
         } else if (operation.command == Operation.Command.CHANGE_AXIS) {
             Matrix.orthoM(currentMatrix, 0, -operation.position.x, operation.position.x,
                 -operation.position.y, operation.position.y, -1f, 1f);
+            // 1px
+            viewWidth = operation.color[0];
+            viewHeight = operation.color[1];
+            lineBorderWidth = operation.position.x * 2 / viewWidth * LINE_BORDER_WIDTH_PX;
+            axisScale = operation.position.x * 2 / viewWidth;
+            Log.d(TAG, "view [width]" + viewWidth + "  [height]" + viewHeight);
+            Log.d(TAG, "line border width: " + lineBorderWidth);
         } else if (operation.command == Operation.Command.TOUCH_EVENT) {
             if (operation.touchAction == Operation.TouchAction.DOWN) {
                 onTouchDown(operation.position);

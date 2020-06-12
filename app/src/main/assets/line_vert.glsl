@@ -1,4 +1,5 @@
 uniform mat4 u_Matrix;
+uniform float u_BorderWidth;
 
 attribute vec4 vPosition;
 attribute vec4 vColor;
@@ -6,9 +7,13 @@ attribute float vLineWidth;
 attribute float vPointID;  // 0.1, 1.1, 2.1, 3.1
 
 varying vec4 fColor;
+varying vec4 fPosition;
+varying float fLineWidth;
 
 void main() {
     fColor = vColor;
+    fPosition = vPosition;
+    fLineWidth = vLineWidth;
 
     vec2 start = vPosition.xy;
     vec2 end = vPosition.zw;

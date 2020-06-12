@@ -37,7 +37,7 @@ public class SketchProcessor implements View.OnTouchListener {
         }
 
         mScale = x * 2.0f / mWidth;
-        mRenderData.changeAxis(new PointF(x, y));
+        mRenderData.changeAxis(new PointF(x, y), w, h);
     }
 
     public void onDestroy() {

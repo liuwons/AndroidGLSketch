@@ -72,6 +72,7 @@ public class Path extends BaseShape {
                 BezierVertex startVertex = new BezierVertex();
                 startVertex.vertexType = BezierVertex.VertexType.START;
                 System.arraycopy(bezier.pos, 0, startVertex.position, 0, 4);
+                System.arraycopy(bezier.ctrl, 0, startVertex.ctrl, 0, 4);
                 mBezierVertexes.add(startVertex);
             }
 
@@ -87,6 +88,7 @@ public class Path extends BaseShape {
             BezierVertex endVertex = new BezierVertex();
             endVertex.vertexType = BezierVertex.VertexType.END;
             System.arraycopy(bezier.pos, 0, endVertex.position, 0, 4);
+            System.arraycopy(bezier.ctrl, 0, endVertex.ctrl, 0, 4);
             mBezierVertexes.add(endVertex);
 
         }

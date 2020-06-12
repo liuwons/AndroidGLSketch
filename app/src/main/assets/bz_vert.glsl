@@ -37,10 +37,12 @@ void main()
     float neighborT;
 
     vec2 selfPos = vec2(0.0, 0.0);
+    bool isEnd = false;
     if (t > 1000.0) {
         // end vertex
         selfPos = a_BzPos.zw;
         neighborT = 1.0 - d;
+        isEnd = true;
     } else if (t < 0.0001) {
         // start vertex
         selfPos = a_BzPos.xy;
@@ -52,8 +54,13 @@ void main()
     }
 
     vec2 neighborPos = b3(p0, p1, p2, p3, neighborT);
+    vec2 direction = vec2(0.0, 0.0);
+    if (isEnd) {
+        direction = selfPos - neighborPos;
+    } else {
+        direction = neighborPos - selfPos;
+    }
 
-    vec2 direction = selfPos - neighborPos;
     vec2 normal = vec2(-direction.y, direction.x);
     float normalLen = pow(normal.x * normal.x + normal.y * normal.y, 0.5);
     float sign = a_TData / t;
@@ -62,4 +69,5 @@ void main()
     v_Color = a_Color;
 
     gl_Position =  u_Matrix * pos;
+    gl_PointSize = 2.0;
 }

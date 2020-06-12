@@ -84,6 +84,10 @@ public class LineRenderer extends BaseRenderer {
             }
         }
 
+        if (vertexCount < 1) {
+            return;
+        }
+
         mVertexBuffer.position(0);
         int positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);

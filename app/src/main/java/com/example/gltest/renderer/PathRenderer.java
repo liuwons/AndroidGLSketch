@@ -1,7 +1,6 @@
 package com.example.gltest.renderer;
 
 import android.content.Context;
-import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.util.Log;
 import com.example.gltest.data.RenderModel;
@@ -18,13 +17,7 @@ public class PathRenderer extends BaseRenderer {
     private static final String SHADER_BZ_VERT = "bz_vert.glsl";
     private static final String SHADER_BZ_FRAG = "bz_frag.glsl";
 
-    private int mAttrColorHandle;
-    private int mAttrBzPosHandle;
-    private int mAttrBzCtrlHandle;
-    private int mAttrTDataHandle;
 
-    private static final int BZ_ARRAY_LEN = 4;
-    private float[] mBzTValArray = new float[BZ_ARRAY_LEN];
 
     public PathRenderer(Context context,
                         RenderModel model,
@@ -32,13 +25,6 @@ public class PathRenderer extends BaseRenderer {
                         IntBuffer indexBuffer,
                         FloatBuffer colorBuffer) {
         super(context, model, vertexBuffer, indexBuffer, colorBuffer);
-
-        mBzTValArray[0] = 0f;
-        float stride = 1.0f / BZ_ARRAY_LEN;
-        for (int i = 1; i < BZ_ARRAY_LEN-1; i ++) {
-            mBzTValArray[i] = mBzTValArray[i-1] + stride;
-        }
-        mBzTValArray[BZ_ARRAY_LEN-1] = 1.0f;
     }
 
     @Override
@@ -66,19 +52,20 @@ public class PathRenderer extends BaseRenderer {
         super.onDrawFrame(gl);
 
         mVertexBuffer.position(0);
+        mIndexBuffer.position(0);
 
-        int pointCount = 0;
+        int vertexCount = 0;
         for (Path path : mModel.paths) {
-            pointCount += dumpPath(path);
+            vertexCount += dumpPath(vertexCount, path);
         }
 
         if (mModel.currentShape != null
             && mModel.currentShape instanceof Path
             && mModel.currentShape.valid()) {
-            pointCount += dumpPath((Path) mModel.currentShape);
+            vertexCount += dumpPath(vertexCount, (Path) mModel.currentShape);
         }
 
-        if (pointCount == 0) {
+        if (vertexCount < 1) {
             return;
         }
 
@@ -87,55 +74,87 @@ public class PathRenderer extends BaseRenderer {
         int matrixHandle = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
         GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mModel.currentMatrix, 0);
 
-        mAttrColorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
-        mAttrBzPosHandle = GLES20.glGetAttribLocation(mProgram, "a_BzPos");
-        mAttrBzCtrlHandle = GLES20.glGetAttribLocation(mProgram, "a_BzCtrl");
-        mAttrTDataHandle = GLES20.glGetAttribLocation(mProgram, "a_TData");
-
+        int stride = 14 * 4;
+        int colorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
         mVertexBuffer.position(0);
-        GLES20.glEnableVertexAttribArray(mAttrColorHandle);
-        GLES20.glVertexAttribPointer(mAttrColorHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+        GLES20.glEnableVertexAttribArray(colorHandle);
+        GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
+        int bzPosHandle = GLES20.glGetAttribLocation(mProgram, "a_BzPos");
         mVertexBuffer.position(4);
-        GLES20.glEnableVertexAttribArray(mAttrBzPosHandle);
-        GLES20.glVertexAttribPointer(mAttrBzPosHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+        GLES20.glEnableVertexAttribArray(bzPosHandle);
+        GLES20.glVertexAttribPointer(bzPosHandle, 4, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
+        int bzCtrlHandle = GLES20.glGetAttribLocation(mProgram, "a_BzCtrl");
         mVertexBuffer.position(8);
-        GLES20.glEnableVertexAttribArray(mAttrBzCtrlHandle);
-        GLES20.glVertexAttribPointer(mAttrBzCtrlHandle, 4, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+        GLES20.glEnableVertexAttribArray(bzCtrlHandle);
+        GLES20.glVertexAttribPointer(bzCtrlHandle, 4, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
+        int tDataHandle = GLES20.glGetAttribLocation(mProgram, "a_TData");
         mVertexBuffer.position(12);
-        GLES20.glEnableVertexAttribArray(mAttrTDataHandle);
-        GLES20.glVertexAttribPointer(mAttrTDataHandle, 1, GLES20.GL_FLOAT, false, 4 * 13, mVertexBuffer);
+        GLES20.glEnableVertexAttribArray(tDataHandle);
+        GLES20.glVertexAttribPointer(tDataHandle, 1, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
-        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, pointCount);
+        int lineWidthHandle = GLES20.glGetAttribLocation(mProgram, "a_LineWidth");
+        mVertexBuffer.position(13);
+        GLES20.glEnableVertexAttribArray(lineWidthHandle);
+        GLES20.glVertexAttribPointer(lineWidthHandle, 1, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
-        GLES20.glDisableVertexAttribArray(mAttrColorHandle);
-        GLES20.glDisableVertexAttribArray(mAttrBzPosHandle);
-        GLES20.glDisableVertexAttribArray(mAttrBzCtrlHandle);
-        GLES20.glDisableVertexAttribArray(mAttrTDataHandle);
+        int indexCount = mIndexBuffer.position();
+        mIndexBuffer.position(0);
+
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, indexCount, GLES20.GL_UNSIGNED_INT, mIndexBuffer);
+
+        GLES20.glDisableVertexAttribArray(colorHandle);
+        GLES20.glDisableVertexAttribArray(bzPosHandle);
+        GLES20.glDisableVertexAttribArray(bzCtrlHandle);
+        GLES20.glDisableVertexAttribArray(tDataHandle);
+        GLES20.glDisableVertexAttribArray(lineWidthHandle);
     }
 
-    private int dumpPath(Path path) {
+    private int dumpPath(int vertexPos, Path path) {
         if (path == null || !path.valid()) {
             return 0;
         }
-        int pointCount = 0;
-        List<Path.CubicBezier> bezierLst = path.calcBezierLines();
-        for (Path.CubicBezier bezier : bezierLst) {
-            pointCount += dumpCubicBezierLine(path.color, bezier.pos, bezier.ctrl);
-        }
-        return pointCount;
-    }
 
-    private int dumpCubicBezierLine(float[] color, float[] pos, float[] ctrl) {
-        for (int i = 0; i < BZ_ARRAY_LEN; i ++) {
-            mVertexBuffer.put(color);
-            mVertexBuffer.put(pos);
-            mVertexBuffer.put(ctrl);
-            mVertexBuffer.put(mBzTValArray[i]);
+        int vertexCount = 0;
+
+        List<Path.BezierVertex> vertexList = path.dump2VertexList();
+        for (int i = 0; i < vertexList.size(); i ++) {
+            Path.BezierVertex vertex = vertexList.get(i);
+            float t = vertex.t;
+            if (vertex.vertexType == Path.BezierVertex.VertexType.START) {
+                t = 0.00001f;
+            } else if (vertex.vertexType == Path.BezierVertex.VertexType.END){
+                t = 10000f;
+            }
+
+            mVertexBuffer.put(path.color);
+            mVertexBuffer.put(vertex.position);
+            mVertexBuffer.put(vertex.ctrl);
+            mVertexBuffer.put(t);
+            mVertexBuffer.put(path.lineWidth);
+
+            mVertexBuffer.put(path.color);
+            mVertexBuffer.put(vertex.position);
+            mVertexBuffer.put(vertex.ctrl);
+            mVertexBuffer.put(-t);
+            mVertexBuffer.put(path.lineWidth);
+
+            vertexCount += 2;
+
+            if (i != 0) {
+                int startPos = vertexPos + (i-1)*2;
+                mIndexBuffer.put(startPos);
+                mIndexBuffer.put(startPos + 1);
+                mIndexBuffer.put(startPos + 2);
+                mIndexBuffer.put(startPos + 1);
+                mIndexBuffer.put(startPos + 2);
+                mIndexBuffer.put(startPos + 3);
+            }
         }
-        return BZ_ARRAY_LEN;
+
+        return vertexCount;
     }
 
     private String floatArr2Str(float[] data) {

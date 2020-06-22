@@ -9,37 +9,36 @@ public class Rect extends BaseShape {
     private boolean mChanged = true;
     private float[] mDumpVertexArray = new float[16];
 
-    private boolean mMoved = false;
-
     public Rect(float[] c) {
-        System.arraycopy(c, 0, color, 0, color.length);
+        super(c);
     }
 
     @Override
     public void onStart(float x, float y) {
+        super.onStart(x, y);
         points[0] = x;
         points[1] = y;
     }
 
     @Override
     public void onMove(float x, float y) {
+        super.onMove(x, y);
         points[2] = x;
         points[3] = y;
         mChanged = true;
-        mMoved = true;
     }
 
     @Override
     public void onFinish(float x, float y) {
+        super.onFinish(x, y);
         points[2] = x;
         points[3] = y;
         mChanged = true;
-        mMoved = true;
     }
 
     @Override
     public boolean valid() {
-        return mMoved && (points[0] != points[2] || points[1] != points[3]);
+        return super.valid() && (points[0] != points[2] || points[1] != points[3]);
     }
 
     public int dumpTriangleData(FloatBuffer vertexBuffer, IntBuffer indexBuffer) {

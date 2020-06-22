@@ -31,6 +31,12 @@
      if (dist > solidRegionWidth) {
          alpha = 1.0 - (dist - solidRegionWidth) / u_BorderWidth;
      }
+     if (alpha > 1.0) {
+         alpha = 1.0;
+     }
+     if (alpha < 0.0) {
+         alpha = 0.0;
+     }
 
      gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
  }

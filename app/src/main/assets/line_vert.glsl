@@ -5,6 +5,7 @@ attribute vec4 vPosition;
 attribute vec4 vColor;
 attribute float vLineWidth;
 attribute float vPointID;  // 0.1, 1.1, 2.1, 3.1
+attribute float vZ;
 
 varying vec4 fColor;
 varying vec4 fPosition;
@@ -41,5 +42,6 @@ void main() {
         y = end.y - scaledOffsetY;
     }
 
-    gl_Position = u_Matrix * vec4(x, y, 0, 1.0);
+    vec4 p = u_Matrix * vec4(x, y, vZ, 1.0);
+    gl_Position = vec4(p.x, p.y, vZ, 1.0);
 }

@@ -74,7 +74,7 @@ public class PathRenderer extends BaseRenderer {
         int matrixHandle = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
         GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mModel.currentMatrix, 0);
 
-        int stride = 14 * 4;
+        int stride = 15 * 4;
         int colorHandle = GLES20.glGetAttribLocation(mProgram, "a_Color");
         mVertexBuffer.position(0);
         GLES20.glEnableVertexAttribArray(colorHandle);
@@ -100,6 +100,11 @@ public class PathRenderer extends BaseRenderer {
         GLES20.glEnableVertexAttribArray(lineWidthHandle);
         GLES20.glVertexAttribPointer(lineWidthHandle, 1, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
 
+        int zHandle = GLES20.glGetAttribLocation(mProgram, "a_ZVal");
+        mVertexBuffer.position(14);
+        GLES20.glEnableVertexAttribArray(zHandle);
+        GLES20.glVertexAttribPointer(zHandle, 1, GLES20.GL_FLOAT, false, stride, mVertexBuffer);
+
         int indexCount = mIndexBuffer.position();
         mIndexBuffer.position(0);
 
@@ -110,6 +115,7 @@ public class PathRenderer extends BaseRenderer {
         GLES20.glDisableVertexAttribArray(bzCtrlHandle);
         GLES20.glDisableVertexAttribArray(tDataHandle);
         GLES20.glDisableVertexAttribArray(lineWidthHandle);
+        GLES20.glDisableVertexAttribArray(zHandle);
     }
 
     private int dumpPath(int vertexPos, Path path) {
@@ -134,12 +140,14 @@ public class PathRenderer extends BaseRenderer {
             mVertexBuffer.put(vertex.ctrl);
             mVertexBuffer.put(t);
             mVertexBuffer.put(path.lineWidth);
+            mVertexBuffer.put(path.getZ());
 
             mVertexBuffer.put(path.color);
             mVertexBuffer.put(vertex.position);
             mVertexBuffer.put(vertex.ctrl);
             mVertexBuffer.put(-t);
             mVertexBuffer.put(path.lineWidth);
+            mVertexBuffer.put(path.getZ());
 
             vertexCount += 2;
 

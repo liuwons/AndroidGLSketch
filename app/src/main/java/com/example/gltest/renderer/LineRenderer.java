@@ -46,8 +46,6 @@ public class LineRenderer extends BaseRenderer {
         super.onDrawFrame(gl);
 
         GLES20.glUseProgram(mProgram);
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         int axisScaleHandle = GLES20.glGetUniformLocation(mProgram, "u_AxisScale");
         GLES20.glUniform1f(axisScaleHandle, mModel.axisScale);
@@ -88,25 +86,32 @@ public class LineRenderer extends BaseRenderer {
             return;
         }
 
+        int stride = 11;
         mVertexBuffer.position(0);
         int positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);
-        GLES20.glVertexAttribPointer(positionHandle, 4, GLES20.GL_FLOAT, false, 10 * 4, mVertexBuffer);
+        GLES20.glVertexAttribPointer(positionHandle, 4, GLES20.GL_FLOAT, false, stride * 4, mVertexBuffer);
 
         mVertexBuffer.position(4);
         int colorHandle = GLES20.glGetAttribLocation(mProgram, "vColor");
         GLES20.glEnableVertexAttribArray(colorHandle);
-        GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, 10 * 4, mVertexBuffer);
+        GLES20.glVertexAttribPointer(colorHandle, 4, GLES20.GL_FLOAT, false, stride * 4, mVertexBuffer);
 
         mVertexBuffer.position(8);
         int widthHandle = GLES20.glGetAttribLocation(mProgram, "vLineWidth");
         GLES20.glEnableVertexAttribArray(widthHandle);
-        GLES20.glVertexAttribPointer(widthHandle, 1, GLES20.GL_FLOAT, false, 10 * 4, mVertexBuffer);
+        GLES20.glVertexAttribPointer(widthHandle, 1, GLES20.GL_FLOAT, false, stride * 4, mVertexBuffer);
 
         mVertexBuffer.position(9);
         int idHandle = GLES20.glGetAttribLocation(mProgram, "vPointID");
         GLES20.glEnableVertexAttribArray(idHandle);
-        GLES20.glVertexAttribPointer(idHandle, 1, GLES20.GL_FLOAT, false, 10 * 4, mVertexBuffer);
+        GLES20.glVertexAttribPointer(idHandle, 1, GLES20.GL_FLOAT, false, stride * 4, mVertexBuffer);
+
+        mVertexBuffer.position(10);
+        int zHandle = GLES20.glGetAttribLocation(mProgram, "vZ");
+        GLES20.glEnableVertexAttribArray(zHandle);
+        GLES20.glVertexAttribPointer(zHandle, 1, GLES20.GL_FLOAT, false, stride * 4, mVertexBuffer);
+
 
         int indexCount = mIndexBuffer.position();
         mIndexBuffer.position(0);
@@ -117,5 +122,6 @@ public class LineRenderer extends BaseRenderer {
         GLES20.glDisableVertexAttribArray(colorHandle);
         GLES20.glDisableVertexAttribArray(widthHandle);
         GLES20.glDisableVertexAttribArray(idHandle);
+        GLES20.glDisableVertexAttribArray(zHandle);
     }
 }

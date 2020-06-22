@@ -31,17 +31,19 @@ public class Path extends BaseShape {
     private volatile boolean mBeziersNeedUpdate = true;
 
     public Path(float[] c) {
-        System.arraycopy(c, 0, color, 0, color.length);
+        super(c);
     }
 
     @Override
     public void onStart(float x, float y) {
+        super.onStart(x, y);
         Log.d(TAG, "onStart:  [x]" + x + "  [y]" + y);
         points.add(new PointF(x, y));
     }
 
     @Override
     public void onMove(float x, float y) {
+        super.onMove(x, y);
         Log.d(TAG, "onMove:  [x]" + x + "  [y]" + y);
         points.add(new PointF(x, y));
         mBeziersNeedUpdate = true;
@@ -49,6 +51,7 @@ public class Path extends BaseShape {
 
     @Override
     public void onFinish(float x, float y) {
+        super.onFinish(x, y);
         Log.d(TAG, "onFinish:  [x]" + x + "  [y]" + y);
         points.add(new PointF(x, y));
         mBeziersNeedUpdate = true;

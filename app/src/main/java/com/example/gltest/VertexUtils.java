@@ -12,6 +12,7 @@ public class VertexUtils {
     public static int dumpLine2TriangleData(int vertexPos, float[] linePosition,
                                             float width,
                                             float[] color,
+                                            float z,
                                             FloatBuffer vertexBuffer,
                                             IntBuffer indexBuffer) {
         for (int i = 0; i < POINT_IDS.length; i++) {
@@ -19,6 +20,7 @@ public class VertexUtils {
             vertexBuffer.put(color);
             vertexBuffer.put(width);
             vertexBuffer.put(POINT_IDS[i]);
+            vertexBuffer.put(z);
             // Log.d(TAG, "dump vertex:  [pos]" + (vertexPos+i) + "  [point id]" + POINT_IDS[i]);
         }
 

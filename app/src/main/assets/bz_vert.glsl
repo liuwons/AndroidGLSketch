@@ -5,6 +5,7 @@ attribute vec4 a_BzPos;
 attribute vec4 a_BzCtrl;
 attribute float a_TData;// Bezier t variable, 0.00001(start), 10000(end)
 attribute float a_LineWidth;
+attribute float a_ZVal;
 
 varying vec4 v_Color;
 
@@ -68,6 +69,6 @@ void main()
 
     v_Color = a_Color;
 
-    gl_Position =  u_Matrix * pos;
-    gl_PointSize = 2.0;
+    vec4 p = u_Matrix * pos;
+    gl_Position =  vec4(p.x, p.y, a_ZVal, 1.0);
 }

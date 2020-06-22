@@ -49,7 +49,7 @@ public class RenderModel {
 
     public RenderModel() {
         System.arraycopy(COLOR_RED, 0, currentColor, 0, currentColor.length);
-        Matrix.orthoM(currentMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
+        Matrix.orthoM(currentMatrix, 0, -1f, 1f, -1f, 1f, 0f, 1f);
     }
 
     public void appendOpreation(Operation operation) {

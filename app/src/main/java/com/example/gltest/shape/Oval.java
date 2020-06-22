@@ -8,26 +8,7 @@ public class Oval extends BaseShape {
     public float shortAxis;
 
     public Oval(float[] c) {
-        System.arraycopy(c, 0, color, 0, color.length);
+        super(c);
     }
 
-    @Override
-    public void onStart(float x, float y) {
-
-    }
-
-    @Override
-    public void onMove(float x, float y) {
-
-    }
-
-    @Override
-    public void onFinish(float x, float y) {
-
-    }
-
-    @Override
-    public boolean valid() {
-        return false;
-    }
 }

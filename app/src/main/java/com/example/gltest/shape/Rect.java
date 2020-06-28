@@ -41,12 +41,9 @@ public class Rect extends BaseShape {
         return super.valid() && (points[0] != points[2] || points[1] != points[3]);
     }
 
-    public int dumpTriangleData(FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
-        if (!valid()) {
-            return 0;
-        }
-
-        return 0;
+    @Override
+    public int dumpTriangles(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
+        return super.dumpTriangles(vertexPos, vertexBuffer, indexBuffer);
     }
 
     public float[] dumpVertex() {

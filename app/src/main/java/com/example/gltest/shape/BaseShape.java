@@ -1,5 +1,8 @@
 package com.example.gltest.shape;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 public class BaseShape {
     private static int sCurrentShapeCount = 1;
 
@@ -41,5 +44,9 @@ public class BaseShape {
 
     public float getZ() {
         return 1.0f - order * 1.0f / sCurrentShapeCount;
+    }
+
+    public int dumpTriangles(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
+        return 0;
     }
 }

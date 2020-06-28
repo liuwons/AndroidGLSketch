@@ -2,8 +2,8 @@ package com.example.gltest.renderer;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.util.Log;
 import com.example.gltest.data.RenderModel;
+import com.example.gltest.shape.BaseShape;
 import com.example.gltest.shape.Line;
 import com.example.gltest.shape.Rect;
 import java.nio.FloatBuffer;
@@ -65,20 +65,16 @@ public class LineRenderer extends BaseRenderer {
 
         int vertexCount = 0;
         // lines
-        for (Line line : mModel.lines) {
-            vertexCount += line.dumpTriangleData(vertexCount, mVertexBuffer, mIndexBuffer);
-        }
-
-        // rectangles
-        for (Rect rect : mModel.rects) {
-            vertexCount += rect.dumpTriangleData(mVertexBuffer, mIndexBuffer);
+        for (BaseShape shape: mModel.shapes) {
+            if (shape instanceof Line || shape instanceof Rect) {
+                vertexCount += shape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
+            }
         }
 
         if (mModel.currentShape != null && mModel.currentShape.valid()) {
-            if (mModel.currentShape instanceof Line) {
-                vertexCount += ((Line) mModel.currentShape).dumpTriangleData(vertexCount, mVertexBuffer, mIndexBuffer);
-            } else if (mModel.currentShape instanceof Rect) {
-                vertexCount += ((Rect) mModel.currentShape).dumpTriangleData(mVertexBuffer, mIndexBuffer);
+            if (mModel.currentShape instanceof Line || mModel.currentShape instanceof Rect) {
+                vertexCount +=
+                    mModel.currentShape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
             }
         }
 

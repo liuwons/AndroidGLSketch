@@ -44,7 +44,8 @@ public class Line extends BaseShape {
         changed = true;
     }
 
-    public int dumpTriangleData(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
+    @Override
+    public int dumpTriangles(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
         if (!valid()) {
             return 0;
         }

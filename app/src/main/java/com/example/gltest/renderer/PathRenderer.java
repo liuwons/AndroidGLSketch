@@ -2,8 +2,8 @@ package com.example.gltest.renderer;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.util.Log;
 import com.example.gltest.data.RenderModel;
+import com.example.gltest.shape.BaseShape;
 import com.example.gltest.shape.Path;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -55,8 +55,10 @@ public class PathRenderer extends BaseRenderer {
         mIndexBuffer.position(0);
 
         int vertexCount = 0;
-        for (Path path : mModel.paths) {
-            vertexCount += dumpPath(vertexCount, path);
+        for (BaseShape shape : mModel.shapes) {
+            if (shape instanceof  Path) {
+                vertexCount += shape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
+            }
         }
 
         if (mModel.currentShape != null

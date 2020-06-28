@@ -3,12 +3,9 @@ package com.example.gltest.renderer;
 import android.content.Context;
 import android.opengl.GLES20;
 import com.example.gltest.data.RenderModel;
-import com.example.gltest.shape.Line;
-import com.example.gltest.shape.Path;
-import com.example.gltest.shape.Rect;
+import com.example.gltest.shape.BaseShape;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -66,33 +63,12 @@ public class CompoundRenderer extends BaseRenderer {
         mColorBuffer.position(0);
 
         int vertexCount = 0;
-        // lines
-        for (Line line : mModel.lines) {
-            vertexCount += line.dumpTriangleData(vertexCount, mVertexBuffer, mIndexBuffer);
-        }
-
-        // rectangles
-        for (Rect rect : mModel.rects) {
-            vertexCount += rect.dumpTriangleData(mVertexBuffer, mIndexBuffer);
+        for (BaseShape shape : mModel.shapes) {
+            vertexCount += shape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
         }
 
         if (mModel.currentShape != null && mModel.currentShape.valid()) {
-            if (mModel.currentShape instanceof Line) {
-                vertexCount += ((Line) mModel.currentShape).dumpTriangleData(vertexCount, mVertexBuffer, mIndexBuffer);
-            } else if (mModel.currentShape instanceof Rect) {
-                vertexCount += ((Rect) mModel.currentShape).dumpTriangleData(mVertexBuffer, mIndexBuffer);
-            }
-        }
-
-        // path
-        for (Path path : mModel.paths) {
-            vertexCount += dumpPath(vertexCount, path);
-        }
-
-        if (mModel.currentShape != null
-            && mModel.currentShape instanceof Path
-            && mModel.currentShape.valid()) {
-            vertexCount += dumpPath(vertexCount, (Path) mModel.currentShape);
+            mModel.currentShape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
         }
 
         if (vertexCount < 1) {
@@ -144,50 +120,5 @@ public class CompoundRenderer extends BaseRenderer {
         GLES20.glDisableVertexAttribArray(ctrlHandle);
     }
 
-    private int dumpPath(int vertexPos, Path path) {
-        if (path == null || !path.valid()) {
-            return 0;
-        }
 
-        int vertexCount = 0;
-
-        List<Path.BezierVertex> vertexList = path.dump2VertexList();
-        for (int i = 0; i < vertexList.size(); i ++) {
-            Path.BezierVertex vertex = vertexList.get(i);
-            float t = vertex.t;
-            if (vertex.vertexType == Path.BezierVertex.VertexType.START) {
-                t = 0.00001f;
-            } else if (vertex.vertexType == Path.BezierVertex.VertexType.END){
-                t = 10000f;
-            }
-
-            mVertexBuffer.put(vertex.position);
-            mVertexBuffer.put(path.color);
-            mVertexBuffer.put(path.lineWidth);
-            mVertexBuffer.put(t);
-            mVertexBuffer.put(path.getZ());
-            mVertexBuffer.put(vertex.ctrl);
-
-            mVertexBuffer.put(vertex.position);
-            mVertexBuffer.put(path.color);
-            mVertexBuffer.put(path.lineWidth);
-            mVertexBuffer.put(-t);
-            mVertexBuffer.put(path.getZ());
-            mVertexBuffer.put(vertex.ctrl);
-
-            vertexCount += 2;
-
-            if (i != 0) {
-                int startPos = vertexPos + (i-1)*2;
-                mIndexBuffer.put(startPos);
-                mIndexBuffer.put(startPos + 1);
-                mIndexBuffer.put(startPos + 2);
-                mIndexBuffer.put(startPos + 1);
-                mIndexBuffer.put(startPos + 2);
-                mIndexBuffer.put(startPos + 3);
-            }
-        }
-
-        return vertexCount;
-    }
 }

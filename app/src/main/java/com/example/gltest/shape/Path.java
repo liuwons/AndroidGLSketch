@@ -2,6 +2,8 @@ package com.example.gltest.shape;
 
 import android.graphics.PointF;
 import android.util.Log;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +62,54 @@ public class Path extends BaseShape {
     @Override
     public boolean valid() {
         return points.size() > 3;
+    }
+
+    @Override
+    public int dumpTriangles(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
+        if (!valid()) {
+            return 0;
+        }
+
+        int vertexCount = 0;
+
+        List<Path.BezierVertex> vertexList = dump2VertexList();
+        for (int i = 0; i < vertexList.size(); i ++) {
+            Path.BezierVertex vertex = vertexList.get(i);
+            float t = vertex.t;
+            if (vertex.vertexType == Path.BezierVertex.VertexType.START) {
+                t = 0.00001f;
+            } else if (vertex.vertexType == Path.BezierVertex.VertexType.END){
+                t = 10000f;
+            }
+
+            vertexBuffer.put(vertex.position);
+            vertexBuffer.put(color);
+            vertexBuffer.put(lineWidth);
+            vertexBuffer.put(t);
+            vertexBuffer.put(getZ());
+            vertexBuffer.put(vertex.ctrl);
+
+            vertexBuffer.put(vertex.position);
+            vertexBuffer.put(color);
+            vertexBuffer.put(lineWidth);
+            vertexBuffer.put(-t);
+            vertexBuffer.put(getZ());
+            vertexBuffer.put(vertex.ctrl);
+
+            vertexCount += 2;
+
+            if (i != 0) {
+                int startPos = vertexPos + (i-1)*2;
+                indexBuffer.put(startPos);
+                indexBuffer.put(startPos + 1);
+                indexBuffer.put(startPos + 2);
+                indexBuffer.put(startPos + 1);
+                indexBuffer.put(startPos + 2);
+                indexBuffer.put(startPos + 3);
+            }
+        }
+
+        return vertexCount;
     }
 
     public List<BezierVertex> dump2VertexList() {

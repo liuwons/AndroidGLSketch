@@ -28,11 +28,7 @@ public class RenderModel {
     private static final float[] COLOR_BLUE = {0.2f, 0.44f, 1.0f, 1.0f};
     private static final float[] COLOR_PURPLE = {0.5f, 0.23f, 0.96f, 1.0f};
 
-    public List<Arrow> arrows = new ArrayList<>();
-    public List<Line> lines = new ArrayList<>();
-    public List<Oval> ovals = new ArrayList<>();
-    public List<Rect> rects = new ArrayList<>();
-    public List<Path> paths = new ArrayList<>();
+    public List<BaseShape> shapes = new ArrayList<>();
 
     public BaseShape currentShape;
     public float[] currentColor = new float[4];
@@ -154,19 +150,7 @@ public class RenderModel {
         if (currentShape == null) {
             return;
         }
-
-        if (currentShape instanceof Arrow) {
-            arrows.add((Arrow)currentShape);
-        } else if (currentShape instanceof Line) {
-            lines.add((Line)currentShape);
-        } else if (currentShape instanceof Oval) {
-            ovals.add((Oval)currentShape);
-        } else if (currentShape instanceof Rect) {
-            rects.add((Rect)currentShape);
-        } else if (currentShape instanceof Path) {
-            paths.add((Path)currentShape);
-        }
-
+        shapes.add(currentShape);
         currentShape = null;
     }
 

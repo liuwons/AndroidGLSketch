@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 import com.example.gltest.data.RenderModel;
 import com.example.gltest.renderer.BaseRenderer;
+import com.example.gltest.renderer.CompoundRenderer;
 import com.example.gltest.renderer.LineRenderer;
 import com.example.gltest.renderer.PathRenderer;
 import java.nio.ByteBuffer;
@@ -57,8 +58,7 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
         colorByteBuffer.order(ByteOrder.nativeOrder());
         mColorBuffer = colorByteBuffer.asFloatBuffer();
 
-        mRenderers.add(new LineRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer, mColorBuffer));
-        mRenderers.add(new PathRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer, mColorBuffer));
+        mRenderers.add(new CompoundRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer, mColorBuffer));
 
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);

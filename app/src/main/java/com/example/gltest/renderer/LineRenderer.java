@@ -17,8 +17,8 @@ public class LineRenderer extends BaseRenderer {
     private static final String SHADER_LINE_VERT = "line_vert.glsl";
     private static final String SHADER_LINE_FRAG = "line_frag.glsl";
 
-    public LineRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, IntBuffer indexBuffer, FloatBuffer colorBuffer) {
-        super(context, model, vertexBuffer, indexBuffer, colorBuffer);
+    public LineRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
+        super(context, model, vertexBuffer, indexBuffer);
     }
 
     @Override
@@ -60,7 +60,6 @@ public class LineRenderer extends BaseRenderer {
 
         mVertexBuffer.position(0);
         mIndexBuffer.position(0);
-        mColorBuffer.position(0);
 
 
         int vertexCount = 0;

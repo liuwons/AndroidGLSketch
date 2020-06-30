@@ -22,9 +22,8 @@ public class PathRenderer extends BaseRenderer {
     public PathRenderer(Context context,
                         RenderModel model,
                         FloatBuffer vertexBuffer,
-                        IntBuffer indexBuffer,
-                        FloatBuffer colorBuffer) {
-        super(context, model, vertexBuffer, indexBuffer, colorBuffer);
+                        IntBuffer indexBuffer) {
+        super(context, model, vertexBuffer, indexBuffer);
     }
 
     @Override

@@ -8,7 +8,7 @@ attribute float vPointIndicator;  // line: 0.1, 1.1, 2.1, 3.1;  bezier: t val
 attribute float vZ;
 attribute vec4 vCtrl;
 
-varying float fBezier;
+varying float fShapeType;
 varying vec4 fColor;
 varying vec4 fPosition;
 varying float fLineWidth;
@@ -26,10 +26,9 @@ vec2 b3(in vec2 p0, in vec2 p1, in vec2 p2, in vec2 p3, in float t)
 }
 
 void main() {
-    bool isBezier = vCtrl.x < 10000.0;
-    fBezier = vCtrl.x;
-
-    if (isBezier) {
+    fShapeType = vCtrl.x;
+    if (fShapeType < 1000.0) {
+        // bezier
         vec4 pos;
         pos.w = 1.0;
 
@@ -78,7 +77,8 @@ void main() {
 
         vec4 p = u_Matrix * pos;
         gl_Position =  vec4(p.x, p.y, vZ, 1.0);
-    } else {
+    } else if (fShapeType < 10000.0) {
+        // line
         fColor = vColor;
         fPosition = vPosition;
         fLineWidth = vLineWidth;
@@ -111,6 +111,8 @@ void main() {
 
         vec4 p = u_Matrix * vec4(x, y, vZ, 1.0);
         gl_Position = vec4(p.x, p.y, vZ, 1.0);
+    } else if (fShapeType < 100000.0) {
+        // oval
     }
 
 }

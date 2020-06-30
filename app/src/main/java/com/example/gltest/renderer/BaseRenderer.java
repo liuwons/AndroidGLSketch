@@ -18,16 +18,14 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     protected RenderModel mModel;
     protected FloatBuffer mVertexBuffer;
     protected IntBuffer mIndexBuffer;
-    protected FloatBuffer mColorBuffer;
 
     protected int mProgram;
 
-    public BaseRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, IntBuffer indexBuffer, FloatBuffer colorBuffer) {
+    public BaseRenderer(Context context, RenderModel model, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
         mContext = context;
         mModel = model;
         mVertexBuffer = vertexBuffer;
         mIndexBuffer = indexBuffer;
-        mColorBuffer = colorBuffer;
     }
 
     protected String getVertexShaderAssetPath() {

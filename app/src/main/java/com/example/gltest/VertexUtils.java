@@ -7,7 +7,7 @@ public class VertexUtils {
     private static final String TAG = VertexUtils.class.getSimpleName();
 
     private static final float[] POINT_IDS = { 0.1f, 1.1f, 2.1f, 3.1f };
-    private static final float[] FAKE_CTRLS = {100000f, 100000f, 100000f, 100000f};
+    private static final float[] FAKE_CTRLS = {1001f, 1001f, 1001f, 1001f};
 
     public static int dumpLine2TriangleData(int vertexPos, float[] linePosition,
                                             float width,

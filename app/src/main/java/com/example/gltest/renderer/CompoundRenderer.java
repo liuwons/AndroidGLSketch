@@ -16,9 +16,8 @@ public class CompoundRenderer extends BaseRenderer {
     public CompoundRenderer(Context context,
                             RenderModel model,
                             FloatBuffer vertexBuffer,
-                            IntBuffer indexBuffer,
-                            FloatBuffer colorBuffer) {
-        super(context, model, vertexBuffer, indexBuffer, colorBuffer);
+                            IntBuffer indexBuffer) {
+        super(context, model, vertexBuffer, indexBuffer);
     }
 
     @Override
@@ -60,7 +59,6 @@ public class CompoundRenderer extends BaseRenderer {
 
         mVertexBuffer.position(0);
         mIndexBuffer.position(0);
-        mColorBuffer.position(0);
 
         int vertexCount = 0;
         for (BaseShape shape : mModel.shapes) {

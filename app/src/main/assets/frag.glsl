@@ -5,7 +5,7 @@
  uniform float u_WindowHeight;
  uniform float u_BorderWidth;
 
- varying float fBezier;
+ varying float fShapeType;
  varying vec4 fColor;
  varying vec4 fPosition;
  varying float fLineWidth;
@@ -19,9 +19,11 @@
  }
 
  void main() {
-     if (fBezier < 10000.0) {
+     if (fShapeType < 1000.0) {
+         // bezier
          gl_FragColor = fColor;
-     } else {
+     } else if (fShapeType < 10000.0) {
+         // line
          vec2 start = fPosition.xy;
          vec2 end = fPosition.zw;
 
@@ -43,5 +45,7 @@
          }
 
          gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
+     } else if (fShapeType < 100000.0) {
+         // oval
      }
  }

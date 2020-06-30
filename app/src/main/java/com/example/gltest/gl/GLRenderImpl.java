@@ -7,8 +7,6 @@ import android.util.Log;
 import com.example.gltest.data.RenderModel;
 import com.example.gltest.renderer.BaseRenderer;
 import com.example.gltest.renderer.CompoundRenderer;
-import com.example.gltest.renderer.LineRenderer;
-import com.example.gltest.renderer.PathRenderer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -34,7 +32,6 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
     private FloatBuffer mVertexBuffer;
     private IntBuffer mIndexBuffer;
-    private FloatBuffer mColorBuffer;
 
     private int[] mBufferHandles = new int[3];  // vertex data;  color;  vertex index
 
@@ -54,11 +51,7 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
         indexByteBuffer.order(ByteOrder.nativeOrder());
         mIndexBuffer = indexByteBuffer.asIntBuffer();
 
-        ByteBuffer colorByteBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE * 4 *SIZEOF_FLOAT);
-        colorByteBuffer.order(ByteOrder.nativeOrder());
-        mColorBuffer = colorByteBuffer.asFloatBuffer();
-
-        mRenderers.add(new CompoundRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer, mColorBuffer));
+        mRenderers.add(new CompoundRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer));
 
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);

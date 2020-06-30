@@ -68,7 +68,7 @@ public class CompoundRenderer extends BaseRenderer {
         }
 
         if (mModel.currentShape != null && mModel.currentShape.valid()) {
-            mModel.currentShape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
+            vertexCount += mModel.currentShape.dumpTriangles(vertexCount, mVertexBuffer, mIndexBuffer);
         }
 
         if (vertexCount < 1) {

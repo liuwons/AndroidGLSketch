@@ -47,5 +47,6 @@
          gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
      } else if (fShapeType < 100000.0) {
          // oval
+         gl_FragColor = fColor;
      }
  }

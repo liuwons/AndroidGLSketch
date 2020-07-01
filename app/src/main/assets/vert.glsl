@@ -4,7 +4,7 @@ uniform float u_BorderWidth;
 attribute vec4 vPosition;
 attribute vec4 vColor;
 attribute float vLineWidth;
-attribute float vPointIndicator;  // line: 0.1, 1.1, 2.1, 3.1;  bezier: t val
+attribute float vPointIndicator;  // line: 0.1, 1.1, 2.1, 3.1;  bezier: t val; oval: angle
 attribute float vZ;
 attribute vec4 vCtrl;
 
@@ -113,6 +113,39 @@ void main() {
         gl_Position = vec4(p.x, p.y, vZ, 1.0);
     } else if (fShapeType < 100000.0) {
         // oval
+        fColor = vColor;
+        fPosition = vPosition;
+        fLineWidth = vLineWidth;
+
+        vec2 center = vec2((vPosition.x + vPosition.z) / 2.0, (vPosition.y + vPosition.w) / 2.0);
+        float a = abs(vPosition.x - vPosition.z) / 2.0;
+        float b = abs(vPosition.y - vPosition.w) / 2.0;
+
+        float pi = 3.14159;
+        float angle = 2.0 * pi * abs(vPointIndicator);
+
+        float x = a * cos(angle);
+        float y = b * sin(angle);
+
+        float deltaAngle = 0.001;
+        vec2 v = vec2(b * sin(angle + deltaAngle) - y, x - a * cos(angle + deltaAngle));
+        vec2 normal = normalize(v);
+        float scaledOffsetX = vLineWidth / 2.0 * normal.x;
+        float scaledOffsetY = vLineWidth / 2.0 * normal.y;
+
+        if (vCtrl.y > 0.0) {
+            x += scaledOffsetX;
+            y += scaledOffsetY;
+        } else {
+            x -= scaledOffsetX;
+            y -= scaledOffsetY;
+        }
+
+        x += center.x;
+        y += center.y;
+
+        vec4 p = u_Matrix * vec4(x, y, vZ, 1.0);
+        gl_Position = vec4(p.x, p.y, vZ, 1.0);
     }
 
 }

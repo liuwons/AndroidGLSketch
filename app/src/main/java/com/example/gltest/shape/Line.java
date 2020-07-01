@@ -1,14 +1,16 @@
 package com.example.gltest.shape;
 
 import android.util.Log;
-import com.example.gltest.VertexUtils;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class Line extends BaseShape {
     private static final String TAG = Line.class.getSimpleName();
 
-    public float[] postion = new float[4];
+    private static final float[] POINT_IDS = { 0.1f, 1.1f, 2.1f, 3.1f };
+    private static final float[] FAKE_CTRLS = {1001f, 1001f, 1001f, 1001f};
+
+    public float[] position = new float[4];
     public float width = 0.01f;
 
     private float[] dumpData = new float[10];
@@ -22,16 +24,16 @@ public class Line extends BaseShape {
     public void onStart(float x, float y) {
         super.onStart(x, y);
         Log.d(TAG, "onStart  [x]" + x + "  [y]" + y);
-        postion[0] = x;
-        postion[1] = y;
+        position[0] = x;
+        position[1] = y;
     }
 
     @Override
     public void onMove(float x, float y) {
         super.onMove(x, y);
         Log.d(TAG, "onMove  [x]" + x + "  [y]" + y);
-        postion[2] = x;
-        postion[3] = y;
+        position[2] = x;
+        position[3] = y;
         changed = true;
     }
 
@@ -39,8 +41,8 @@ public class Line extends BaseShape {
     public void onFinish(float x, float y) {
         super.onFinish(x, y);
         Log.d(TAG, "onFinish  [x]" + x + "  [y]" + y);
-        postion[2] = x;
-        postion[3] = y;
+        position[2] = x;
+        position[3] = y;
         changed = true;
     }
 
@@ -53,7 +55,29 @@ public class Line extends BaseShape {
         if (!changed) {
         }
 
-        return VertexUtils.dumpLine2TriangleData(vertexPos, postion, width, color, getZ(),
-            vertexBuffer, indexBuffer);
+        return dumpLine2TriangleData(vertexPos, vertexBuffer, indexBuffer);
+    }
+
+    private int dumpLine2TriangleData(int vertexPos,
+                                      FloatBuffer vertexBuffer,
+                                      IntBuffer indexBuffer) {
+        for (int i = 0; i < POINT_IDS.length; i++) {
+            vertexBuffer.put(position);
+            vertexBuffer.put(color);
+            vertexBuffer.put(width);
+            vertexBuffer.put(POINT_IDS[i]);
+            vertexBuffer.put(getZ());
+            vertexBuffer.put(FAKE_CTRLS);
+            // Log.d(TAG, "dump vertex:  [pos]" + (vertexPos+i) + "  [point id]" + POINT_IDS[i]);
+        }
+
+        indexBuffer.put(vertexPos);
+        indexBuffer.put(vertexPos + 1);
+        indexBuffer.put(vertexPos + 2);
+        indexBuffer.put(vertexPos + 1);
+        indexBuffer.put(vertexPos + 2);
+        indexBuffer.put(vertexPos + 3);
+
+        return 4;
     }
 }

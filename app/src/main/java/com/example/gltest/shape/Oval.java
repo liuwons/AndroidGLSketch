@@ -9,8 +9,8 @@ public class Oval extends BaseShape {
 
     private static final int SLICE_COUNT = 100;
     private static final float[] POINT_IDS = new float[SLICE_COUNT]; // 0.0 ~ 1.0
-    private static final float[] FAKE_CTRLS = {10001f, 10001f, 10001f, 10001f};
-    private static final float[] FAKE_CTRLS2 = {10001f, -10001f, 10001f, 10001f};
+    private static final float[] FAKE_CTRLS = {1101f, 1101f, 1101f, 1101f};
+    private static final float[] FAKE_CTRLS2 = {1101f, -1101f, 1101f, 1101f};
 
     static {
         float stride = 1.0f / (SLICE_COUNT - 2);  //边界特殊处理

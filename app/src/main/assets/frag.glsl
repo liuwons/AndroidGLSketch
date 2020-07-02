@@ -22,7 +22,7 @@
      if (fShapeType < 1000.0) {
          // bezier
          gl_FragColor = fColor;
-     } else if (fShapeType < 10000.0) {
+     } else if (fShapeType < 1100.0) {
          // line
          vec2 start = fPosition.xy;
          vec2 end = fPosition.zw;
@@ -45,8 +45,11 @@
          }
 
          gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
-     } else if (fShapeType < 100000.0) {
+     } else if (fShapeType < 1200.0) {
          // oval
+         gl_FragColor = fColor;
+     } else if (fShapeType < 1300.0) {
+         // arrow
          gl_FragColor = fColor;
      }
  }

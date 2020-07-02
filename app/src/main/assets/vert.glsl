@@ -77,7 +77,7 @@ void main() {
 
         vec4 p = u_Matrix * pos;
         gl_Position =  vec4(p.x, p.y, vZ, 1.0);
-    } else if (fShapeType < 10000.0) {
+    } else if (fShapeType < 1100.0) {
         // line
         fColor = vColor;
         fPosition = vPosition;
@@ -111,7 +111,7 @@ void main() {
 
         vec4 p = u_Matrix * vec4(x, y, vZ, 1.0);
         gl_Position = vec4(p.x, p.y, vZ, 1.0);
-    } else if (fShapeType < 100000.0) {
+    } else if (fShapeType < 1200.0) {
         // oval
         fColor = vColor;
         fPosition = vPosition;
@@ -146,6 +146,81 @@ void main() {
 
         vec4 p = u_Matrix * vec4(x, y, vZ, 1.0);
         gl_Position = vec4(p.x, p.y, vZ, 1.0);
+    } else if (fShapeType < 1300.0) {
+        // arrow
+        fColor = vColor;
+        fPosition = vPosition;
+        fLineWidth = vLineWidth;
+
+        vec2 start = vPosition.xy;
+        vec2 end = vPosition.zw;
+
+        float ovalSliceCount = vCtrl.w;
+
+        if (vPointIndicator < 0.0) {
+            // 圆心
+            vec4 p = u_Matrix * vec4(start.x, start.y, 0.0, 1.0);
+            gl_Position = vec4(p.x, p.y, vZ, 1.0);
+        } else if (vPointIndicator < 2.0) {
+            // 圆周
+            float pi = 3.14159;
+            float angle = 2.0 * pi * abs(vPointIndicator);
+
+            float radius = vLineWidth / 7.0 / 2.0;
+            float x = start.x + radius * cos(angle);
+            float y = start.y + radius * sin(angle);
+            vec4 p = u_Matrix * vec4(x, y, 0.0, 1.0);
+            gl_Position = vec4(p.x, p.y, vZ, 1.0);
+        } else {
+            highp int idx = int(vPointIndicator - ovalSliceCount - 1.0);
+
+            vec2 v = vec2(start.y - end.y, end.x - start.x);
+            vec2 normal = normalize(v);
+
+            vec2 dir = start - end;
+            vec2 offset = normalize(dir) * vLineWidth;
+
+            if (idx < 4) {
+                // 箭头体
+                float startWidth = vLineWidth / 7.0;
+                float endWidth = vLineWidth / 7.0 * 3.0;
+
+                float x = start.x;
+                float y = start.y;
+                if (idx == 0) {
+                    x += normal.x * startWidth / 2.0;
+                    y += normal.y * startWidth / 2.0;
+                } else if (idx == 1) {
+                    x -= normal.x * startWidth / 2.0;
+                    y -= normal.y * startWidth / 2.0;
+                } else if (idx == 2) {
+                    x = end.x + normal.x * endWidth / 2.0 + offset.x;
+                    y = end.y + normal.y * endWidth / 2.0 + offset.y;
+                } else if (idx == 3) {
+                    x = end.x - normal.x * endWidth / 2.0 + offset.x;
+                    y = end.y - normal.y * endWidth / 2.0 + offset.y;
+                }
+                vec4 p = u_Matrix * vec4(x, y, 0.0, 1.0);
+                gl_Position = vec4(p.x, p.y, vZ, 1.0);
+            } else {
+                // 箭头
+                float x = end.x;
+                float y = end.y;
+                if (idx != 6) {
+                    x += offset.x;
+                    y += offset.y;
+                }
+                if (idx == 4) {
+                    x += normal.x * vLineWidth / 2.0;
+                    y += normal.y * vLineWidth / 2.0;
+                } else if (idx == 5) {
+                    x -= normal.x * vLineWidth / 2.0;
+                    y -= normal.y * vLineWidth / 2.0;
+                }
+                vec4 p = u_Matrix * vec4(x, y, 0.0, 1.0);
+                gl_Position = vec4(p.x, p.y, vZ, 1.0);
+            }
+        }
     }
 
 }

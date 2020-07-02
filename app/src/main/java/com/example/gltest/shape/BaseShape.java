@@ -1,5 +1,6 @@
 package com.example.gltest.shape;
 
+import android.graphics.PointF;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -12,6 +13,9 @@ public class BaseShape {
     private boolean mStarted = false;
     private boolean mMoved = false;
     private boolean mFinished = false;
+
+    private PointF mStartPoint = new PointF();
+    private PointF mEndPoint = new PointF();
 
     public BaseShape(float[] c) {
         order = sCurrentShapeCount;
@@ -28,14 +32,17 @@ public class BaseShape {
 
     public void onStart(float x, float y) {
         mStarted = true;
+        mStartPoint.set(x, y);
     }
 
     public void onMove(float x, float y) {
         mMoved = true;
+        mEndPoint.set(x, y);
     }
 
     public void onFinish(float x, float y) {
         mFinished = true;
+        mEndPoint.set(x, y);
     }
 
     public boolean valid() {
@@ -48,5 +55,9 @@ public class BaseShape {
 
     public int dumpTriangles(int vertexPos, FloatBuffer vertexBuffer, IntBuffer indexBuffer) {
         return 0;
+    }
+
+    public float length() {
+        return PointF.length(mStartPoint.x - mEndPoint.x, mStartPoint.y - mEndPoint.y);
     }
 }

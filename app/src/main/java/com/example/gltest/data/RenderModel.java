@@ -9,6 +9,7 @@ import com.example.gltest.shape.Line;
 import com.example.gltest.shape.Oval;
 import com.example.gltest.shape.Path;
 import com.example.gltest.shape.Rect;
+import com.example.gltest.shape.Round;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -168,6 +169,9 @@ public class RenderModel {
         } else if(currentMode == SketchProcessor.SketchMode.MODE_PATH) {
             Log.d(TAG, "create path");
             return new Path(currentColor);
+        } else if (currentMode == SketchProcessor.SketchMode.MODE_ROUND) {
+            Log.d(TAG, "create round");
+            return new Round(currentColor);
         } else {
             Log.d(TAG, "create rect");
             return new Rect(currentColor);

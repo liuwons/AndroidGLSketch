@@ -87,7 +87,8 @@ public class SketchProcessor implements View.OnTouchListener {
         MODE_LINE,
         MODE_OVAL,
         MODE_RECT,
-        MODE_PATH
+        MODE_PATH,
+        MODE_ROUND
     }
 
     public enum SketchColor {

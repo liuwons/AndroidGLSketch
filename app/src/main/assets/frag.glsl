@@ -51,5 +51,8 @@
      } else if (fShapeType < 1300.0) {
          // arrow
          gl_FragColor = fColor;
+     } else if (fShapeType < 1400.0) {
+         // round
+         gl_FragColor = fColor;
      }
  }

@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity
     private TextView mBtnOval;
     private TextView mBtnRect;
     private TextView mBtnPath;
+    private TextView mBtnRound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity
         mBtnRect.setOnClickListener(this);
         mBtnPath = findViewById(R.id.btn_path);
         mBtnPath.setOnClickListener(this);
+        mBtnRound = findViewById(R.id.btn_round);
+        mBtnRound.setOnClickListener(this);
 
         mSketchView = findViewById(R.id.sketch_view);
         RenderModel model = new RenderModel();
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(false);
             mBtnPath.setSelected(false);
+            mBtnRound.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_ARROW);
         } else if (v.getId() == R.id.btn_line) {
             mBtnArrow.setSelected(false);
@@ -70,6 +74,7 @@ public class MainActivity extends AppCompatActivity
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(false);
             mBtnPath.setSelected(false);
+            mBtnRound.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_LINE);
         } else if (v.getId() == R.id.btn_oval) {
             mBtnArrow.setSelected(false);
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity
             mBtnOval.setSelected(true);
             mBtnRect.setSelected(false);
             mBtnPath.setSelected(false);
+            mBtnRound.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_OVAL);
         } else if (v.getId() == R.id.btn_rect) {
             mBtnArrow.setSelected(false);
@@ -84,6 +90,7 @@ public class MainActivity extends AppCompatActivity
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(true);
             mBtnPath.setSelected(false);
+            mBtnRound.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_RECT);
         } else if (v.getId() == R.id.btn_path) {
             mBtnArrow.setSelected(false);
@@ -91,7 +98,16 @@ public class MainActivity extends AppCompatActivity
             mBtnOval.setSelected(false);
             mBtnRect.setSelected(false);
             mBtnPath.setSelected(true);
+            mBtnRound.setSelected(false);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_PATH);
+        } else if (v.getId() == R.id.btn_round) {
+            mBtnArrow.setSelected(false);
+            mBtnLine.setSelected(false);
+            mBtnOval.setSelected(false);
+            mBtnRect.setSelected(false);
+            mBtnPath.setSelected(false);
+            mBtnRound.setSelected(true);
+            mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_ROUND);
         }
     }
 

@@ -221,6 +221,28 @@ void main() {
                 gl_Position = vec4(p.x, p.y, vZ, 1.0);
             }
         }
+    } else if (fShapeType < 1400.0) {
+        // oval
+        fColor = vColor;
+        fPosition = vPosition;
+        fLineWidth = vLineWidth;
+
+        vec2 center = vec2((vPosition.x + vPosition.z) / 2.0, (vPosition.y + vPosition.w) / 2.0);
+
+        if (vPointIndicator < -0.1) {
+            // 圆心
+            vec4 p = u_Matrix * vec4(center.x, center.y, 0.0, 1.0);
+            gl_Position = vec4(p.x, p.y, vZ, 1.0);
+        } else {
+            float radius = max(abs(vPosition.x - vPosition.z), abs(vPosition.y - vPosition.w)) / 2.0;
+
+            float pi = 3.14159;
+            float angle = 2.0 * pi * abs(vPointIndicator);
+            float x = center.x + radius * cos(angle);
+            float y = center.y + radius * sin(angle);
+            vec4 p = u_Matrix * vec4(x, y, 0.0, 1.0);
+            gl_Position = vec4(p.x, p.y, vZ, 1.0);
+        }
     }
 
 }

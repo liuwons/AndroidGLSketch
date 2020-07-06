@@ -55,13 +55,18 @@
          float pi = 3.14159;
          float angle = 2.0 * pi * abs(fPointIndex);
 
-         vec2 cp = vec2(a * cos(angle), b * sin(angle)) + center;
+         vec2 cp = vec2(a * cos(angle), b * sin(angle));
+         vec2 deltaP = vec2(0.0, 0.0);
+         if ((fPointIndex > 1.0 / 8.0 && fPointIndex < 3.0 / 8.0) || (fPointIndex > 5.0 / 8.0 && fPointIndex < 7.0 / 8.0)) {
+             deltaP.x = cp.x + 1.0;
+             deltaP.y = cp.y - b / a * b / a * cp.x / cp.y;
+         } else {
+             deltaP.y = cp.y + 1.0;
+             deltaP.x = cp.x - a / b * a / b * cp.y / cp.x;
+         }
 
-         float deltaAngle = 0.003;
-         vec2 deltaP = vec2(a * cos(angle + deltaAngle), b * sin(angle + deltaAngle)) + center;
-
-         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0);
-         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0);
+         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0) - center.x;
+         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0) - center.y;
 
          float dist = pointDistToLine(cp, deltaP, vec2(x, y));
 

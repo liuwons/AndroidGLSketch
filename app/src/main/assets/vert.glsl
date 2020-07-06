@@ -12,6 +12,7 @@ varying float fShapeType;
 varying vec4 fColor;
 varying vec4 fPosition;
 varying float fLineWidth;
+varying float fPointIndex;
 
 vec2 b3(in vec2 p0, in vec2 p1, in vec2 p2, in vec2 p3, in float t)
 {
@@ -27,6 +28,7 @@ vec2 b3(in vec2 p0, in vec2 p1, in vec2 p2, in vec2 p3, in float t)
 
 void main() {
     fShapeType = vCtrl.x;
+    fPointIndex = vPointIndicator;
     if (fShapeType < 1000.0) {
         // bezier
         vec4 pos;
@@ -222,7 +224,7 @@ void main() {
             }
         }
     } else if (fShapeType < 1400.0) {
-        // oval
+        // round
         fColor = vColor;
         fPosition = vPosition;
         fLineWidth = vLineWidth;

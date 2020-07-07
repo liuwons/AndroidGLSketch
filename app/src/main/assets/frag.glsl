@@ -85,7 +85,43 @@
          gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
      } else if (fShapeType < 1300.0) {
          // arrow
-         gl_FragColor = fColor;
+         vec2 start = fPosition.xy;
+         vec2 end = fPosition.zw;
+
+         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0);
+         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0);
+
+         vec2 v = vec2(x, y) - start;
+
+         vec2 vecLine = normalize(end - start);
+         vec2 normalLine = vec2(-vecLine.y, vecLine.x);
+
+         float arrowBodyLength = length(end - start) - fLineWidth;
+
+         float dst2Line = abs(dot(v, normalLine));
+         float lengthOverLine = abs(dot(v, vecLine));
+
+         float alpha = 1.0;
+         if (lengthOverLine > arrowBodyLength) {
+             // 箭头
+             alpha = 1.0;
+         } else {
+             // 箭体
+             float ratio = lengthOverLine / arrowBodyLength;
+             if (ratio > 1.0) {
+                 ratio = 1.0;
+             }
+             float startWidth = fLineWidth / 7.0;
+             float endWidth = fLineWidth / 7.0 * 3.0;
+             float width = mix(startWidth, endWidth, ratio);
+
+             float solidRegionWidth = width / 2.0 - u_BorderWidth;
+             if (dst2Line > solidRegionWidth) {
+                 alpha = 1.0 - (dst2Line - solidRegionWidth) / u_BorderWidth;
+             }
+         }
+
+         gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
      } else if (fShapeType < 1400.0) {
          // round
          vec2 center = vec2((fPosition.x + fPosition.z) / 2.0, (fPosition.y + fPosition.w) / 2.0);

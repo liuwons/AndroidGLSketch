@@ -34,7 +34,10 @@ public class RenderModel {
     public BaseShape currentShape;
     public float[] currentColor = new float[4];
     public SketchProcessor.SketchMode currentMode = SketchProcessor.SketchMode.MODE_LINE;
+    public float[] initMaritx = new float[16];
     public float[] currentMatrix = new float[16];
+    public PointF currentTranslate = new PointF(0.0f, 0.0f);
+    public float currentScale = 1.0f;
     public float lineBorderWidth = 0f;  // 抗锯齿运算时,线条两边alpha渐变的宽度
     public float viewWidth = 0;
     public float viewHeight = 0;
@@ -46,7 +49,7 @@ public class RenderModel {
 
     public RenderModel() {
         System.arraycopy(COLOR_RED, 0, currentColor, 0, currentColor.length);
-        Matrix.orthoM(currentMatrix, 0, -1f, 1f, -1f, 1f, 0f, 1f);
+        Matrix.orthoM(initMaritx, 0, -1f, 1f, -1f, 1f, 0f, 1f);
     }
 
     public void appendOpreation(Operation operation) {
@@ -118,13 +121,14 @@ public class RenderModel {
         } else if (operation.command == Operation.Command.CHANGE_SHAPE) {
             currentMode = operation.mode;
         } else if (operation.command == Operation.Command.CHANGE_AXIS) {
-            Matrix.orthoM(currentMatrix, 0, -operation.position.x, operation.position.x,
+            Matrix.orthoM(initMaritx, 0, -operation.position.x, operation.position.x,
                 -operation.position.y, operation.position.y, -1f, 1f);
+            System.arraycopy(initMaritx, 0, currentMatrix, 0, initMaritx.length);
             // 1px
             viewWidth = operation.color[0];
             viewHeight = operation.color[1];
-            lineBorderWidth = operation.position.x * 2 / viewWidth * LINE_BORDER_WIDTH_PX;
             axisScale = operation.position.x * 2 / viewWidth;
+            lineBorderWidth = axisScale * LINE_BORDER_WIDTH_PX;
             Log.d(TAG, "view [width]" + viewWidth + "  [height]" + viewHeight);
             Log.d(TAG, "line border width: " + lineBorderWidth);
         } else if (operation.command == Operation.Command.TOUCH_EVENT) {
@@ -135,6 +139,17 @@ public class RenderModel {
             } else if (operation.touchAction == Operation.TouchAction.UP) {
                 onTouchUp(operation.position);
             }
+        } else if (operation.command == Operation.Command.SCALE) {
+            float scale = operation.position.x;
+            currentScale = scale;
+            currentTranslate.set(0f, 0f);
+            Matrix.scaleM(currentMatrix, 0, initMaritx, 0, scale, scale, scale);
+            Log.i(TAG, "scale: " + scale);
+        } else if (operation.command == Operation.Command.TRANSLATE) {
+            currentTranslate.set(operation.position);
+            currentScale = 1.0f;
+            Matrix.translateM(currentMatrix, 0, initMaritx, 0, currentTranslate.x, currentTranslate.y, 0);
+            Log.i(TAG, "translate: [x]" + operation.position.x + "  [y]" + operation.position.y);
         }
         mRecycleOperations.offer(operation);
     }

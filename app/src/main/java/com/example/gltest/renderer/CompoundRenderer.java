@@ -48,10 +48,12 @@ public class CompoundRenderer extends BaseRenderer {
 
         int axisScaleHandle = GLES20.glGetUniformLocation(mProgram, "u_AxisScale");
         GLES20.glUniform1f(axisScaleHandle, mModel.axisScale);
+        int transformHandle = GLES20.glGetUniformLocation(mProgram, "u_Transform");
+        GLES20.glUniform3f(transformHandle, mModel.currentTranslate.x, mModel.currentTranslate.y, mModel.currentScale);
         int matrixHandle = GLES20.glGetUniformLocation(mProgram, "u_Matrix");
         GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mModel.currentMatrix, 0);
         int lineBorderWidthHandle = GLES20.glGetUniformLocation(mProgram, "u_BorderWidth");
-        GLES20.glUniform1f(lineBorderWidthHandle, mModel.lineBorderWidth);
+        GLES20.glUniform1f(lineBorderWidthHandle, mModel.lineBorderWidth / mModel.currentScale);
         int windowWidthHandle = GLES20.glGetUniformLocation(mProgram, "u_WindowWidth");
         GLES20.glUniform1f(windowWidthHandle, mModel.viewWidth);
         int windowHeightHandle = GLES20.glGetUniformLocation(mProgram, "u_WindowHeight");

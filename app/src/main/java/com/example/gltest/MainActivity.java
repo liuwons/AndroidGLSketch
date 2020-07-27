@@ -18,6 +18,9 @@ public class MainActivity extends AppCompatActivity
 
     RadioGroup mColorPicker;
 
+    private TextView mBtnDrag;
+    private TextView mBtnScale;
+
     private TextView mBtnArrow;
     private TextView mBtnLine;
     private TextView mBtnOval;
@@ -33,6 +36,11 @@ public class MainActivity extends AppCompatActivity
 
         mColorPicker = findViewById(R.id.color_picker);
         mColorPicker.setOnCheckedChangeListener(this);
+
+        mBtnDrag = findViewById(R.id.btn_drag);
+        mBtnDrag.setOnClickListener(this);
+        mBtnScale = findViewById(R.id.btn_scale);
+        mBtnScale.setOnClickListener(this);
 
         mBtnArrow = findViewById(R.id.btn_arrow);
         mBtnArrow.setOnClickListener(this);
@@ -108,6 +116,32 @@ public class MainActivity extends AppCompatActivity
             mBtnPath.setSelected(false);
             mBtnRound.setSelected(true);
             mSketchProcessor.setMode(SketchProcessor.SketchMode.MODE_ROUND);
+        } else if (v.getId() == R.id.btn_drag) {
+            if (mSketchProcessor.scaling()) {
+                mSketchProcessor.setScaling(false);
+                mSketchProcessor.setDraging(true);
+                mBtnDrag.setSelected(true);
+                mBtnScale.setSelected(false);
+            } else if (mSketchProcessor.draging()) {
+                mSketchProcessor.setDraging(false);
+                mBtnDrag.setSelected(false);
+            } else {
+                mSketchProcessor.setDraging(true);
+                mBtnDrag.setSelected(true);
+            }
+        } else if (v.getId() == R.id.btn_scale) {
+            if (mSketchProcessor.scaling()) {
+                mSketchProcessor.setScaling(false);
+                mBtnScale.setSelected(false);
+            } else if (mSketchProcessor.draging()) {
+                mSketchProcessor.setDraging(false);
+                mSketchProcessor.setScaling(true);
+                mBtnDrag.setSelected(false);
+                mBtnScale.setSelected(true);
+            } else {
+                mSketchProcessor.setScaling(true);
+                mBtnScale.setSelected(true);
+            }
         }
     }
 

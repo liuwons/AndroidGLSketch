@@ -8,7 +8,9 @@ public class Operation {
         CHANGE_COLOR,
         CHANGE_SHAPE,
         CHANGE_AXIS,
-        TOUCH_EVENT
+        TOUCH_EVENT,
+        SCALE,
+        TRANSLATE
     }
 
     public enum TouchAction {

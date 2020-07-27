@@ -76,6 +76,9 @@ void main() {
         pos.xy = selfPos + normal / normalLen * vLineWidth / 2.0 * sign;
 
         fColor = vColor;
+        fLineWidth = vLineWidth;
+        vec2 nd = normalize(direction);
+        fPosition = vec4(selfPos.xy, nd.xy);
 
         vec4 p = u_Matrix * pos;
         gl_Position =  vec4(p.x, p.y, vZ, 1.0);

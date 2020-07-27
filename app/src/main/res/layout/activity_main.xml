@@ -76,66 +76,93 @@
 
     </LinearLayout>
 
-    <RadioGroup
-        android:id="@+id/color_picker"
+    <LinearLayout
+        android:id="@+id/medium_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/shape_container">
-
-        <RadioButton
-            android:id="@+id/rb_color_red"
+        
+        <TextView
+            android:id="@+id/btn_drag"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/btn_text_color_selector"
+            android:textSize="16dp"
+            android:text="drag"/>
+        
+        <RadioGroup
+            android:id="@+id/color_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/color_picker_red"
-            android:button="@null" />
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/rb_color_yellow"
-            android:layout_width="wrap_content"
+            <RadioButton
+                android:id="@+id/rb_color_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/color_picker_red"
+                android:button="@null" />
+
+            <RadioButton
+                android:id="@+id/rb_color_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/color_picker_yellow"
+                android:button="@null" />
+
+            <RadioButton
+                android:id="@+id/rb_color_green"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/color_picker_green"
+                android:button="@android:color/transparent" />
+
+            <RadioButton
+                android:id="@+id/rb_color_blue"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/color_picker_blue"
+                android:button="@android:color/transparent" />
+
+            <RadioButton
+                android:id="@+id/rb_color_purple"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/color_picker_purple"
+                android:button="@android:color/transparent" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/btn_scale"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/color_picker_yellow"
-            android:button="@null" />
-
-        <RadioButton
-            android:id="@+id/rb_color_green"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/color_picker_green"
-            android:button="@android:color/transparent" />
-
-        <RadioButton
-            android:id="@+id/rb_color_blue"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/color_picker_blue"
-            android:button="@android:color/transparent" />
-
-        <RadioButton
-            android:id="@+id/rb_color_purple"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/color_picker_purple"
-            android:button="@android:color/transparent" />
-    </RadioGroup>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/btn_text_color_selector"
+            android:textSize="16dp"
+            android:text="scale"/>
+    </LinearLayout>
 
     <com.example.gltest.gl.SketchTextureView
         android:id="@+id/sketch_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/color_picker"
+        app:layout_constraintBottom_toTopOf="@id/medium_bar"
         android:layout_marginBottom="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

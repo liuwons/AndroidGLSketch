@@ -1,5 +1,6 @@
  precision mediump float;
 
+ uniform vec3 u_Transform;
  uniform float u_AxisScale;
  uniform float u_WindowWidth;
  uniform float u_WindowHeight;
@@ -20,16 +21,39 @@
  }
 
  void main() {
+     float transformX = u_Transform.x;
+     float transformY = u_Transform.y;
+     float scale = u_Transform.z;
+     float x = (gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0)) / scale - transformX;
+     float y = (gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0)) / scale - transformY;
+
      if (fShapeType < 1000.0) {
          // bezier
          gl_FragColor = fColor;
+
+         vec2 pos = fPosition.xy;
+         vec2 direction = fPosition.zw;
+
+         float dist = pointDistToLine(pos, pos+direction, vec2(x, y));
+
+         float solidRegionWidth = fLineWidth / 2.0 - u_BorderWidth;
+         float alpha = 1.0;
+         if (dist > solidRegionWidth) {
+             alpha = 1.0 - (dist - solidRegionWidth) / u_BorderWidth;
+         }
+         if (alpha > 1.0) {
+             alpha = 1.0;
+         }
+         if (alpha < 0.0) {
+             alpha = 0.0;
+         }
+
+         gl_FragColor = vec4(fColor.r, fColor.g, fColor.b, alpha);
+
      } else if (fShapeType < 1100.0) {
          // line
          vec2 start = fPosition.xy;
          vec2 end = fPosition.zw;
-
-         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0);
-         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0);
 
          float dist = pointDistToLine(start, end, vec2(x, y));
 
@@ -65,8 +89,8 @@
              deltaP.x = cp.x - a / b * a / b * cp.y / cp.x;
          }
 
-         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0) - center.x;
-         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0) - center.y;
+         x -= center.x;
+         y -= center.y;
 
          float dist = pointDistToLine(cp, deltaP, vec2(x, y));
 
@@ -87,9 +111,6 @@
          // arrow
          vec2 start = fPosition.xy;
          vec2 end = fPosition.zw;
-
-         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0);
-         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0);
 
          vec2 v = vec2(x, y) - start;
 
@@ -127,8 +148,6 @@
          vec2 center = vec2((fPosition.x + fPosition.z) / 2.0, (fPosition.y + fPosition.w) / 2.0);
          float radius = max(abs(fPosition.x - fPosition.z), abs(fPosition.y - fPosition.w)) / 2.0;
 
-         float x = gl_FragCoord.x * u_AxisScale - (u_WindowWidth * u_AxisScale / 2.0);
-         float y = gl_FragCoord.y * u_AxisScale - (u_WindowHeight * u_AxisScale / 2.0);
          vec2 pos = vec2(x, y);
          float dist = length(pos - center);
 

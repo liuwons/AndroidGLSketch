@@ -1,7 +1,6 @@
 package com.example.gltest.gl;
 
 import android.graphics.SurfaceTexture;
-import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.util.Log;
 import javax.microedition.khronos.egl.EGL10;
@@ -22,7 +21,7 @@ public class GLThread extends Thread {
     private static final int EGL_OPENGL_ES2_BIT = 4;
 
     private SurfaceTexture mSurface;
-    private GLSurfaceView.Renderer mRenderer;
+    private GLSketchRenderer mRenderer;
 
     private long mLastRenderTime = 0;
     private volatile boolean finished;
@@ -37,7 +36,7 @@ public class GLThread extends Thread {
     private int height;
     private volatile boolean sizeChanged = true;
 
-    public GLThread(SurfaceTexture surfaceTexture, GLSurfaceView.Renderer renderer, int w, int h) {
+    public GLThread(SurfaceTexture surfaceTexture, GLSketchRenderer renderer, int w, int h) {
         Log.d(TAG, "create GLThread  [FRAME_INTV]" + FRAME_INTV + "  [w]" + w + "  [h]" + h);
         mSurface = surfaceTexture;
         mRenderer = renderer;
@@ -188,6 +187,7 @@ public class GLThread extends Thread {
         }
     }
     private void finishGL() {
+        mRenderer.onSurfaceDestroy();
         egl.eglDestroyContext(eglDisplay, eglContext);
         egl.eglTerminate(eglDisplay);
         egl.eglDestroySurface(eglDisplay, eglSurface);

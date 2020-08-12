@@ -2,26 +2,20 @@ package com.example.gltest.gl;
 
 import android.content.Context;
 import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.util.Log;
 import com.example.gltest.data.RenderModel;
+import com.example.gltest.mm.GLBufferManager;
 import com.example.gltest.renderer.BaseRenderer;
 import com.example.gltest.renderer.CompoundRenderer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class GLRenderImpl implements GLSurfaceView.Renderer {
+public class GLRenderImpl implements GLSketchRenderer {
     private static String TAG = GLRenderImpl.class.getSimpleName();
 
-    private static final int SIZEOF_FLOAT = 4;
-    private static final int SIZEOF_INT = 4;
-    private static final int BUFFER_SIZE = 1024 * 1024;
+    private GLBufferManager mBufferManager;
 
     private int mWidth;
     private int mHeight;
@@ -30,28 +24,18 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
 
     private Context mContext;
 
-    private FloatBuffer mVertexBuffer;
-    private IntBuffer mIndexBuffer;
-
-    private int[] mBufferHandles = new int[3];  // vertex data;  color;  vertex index
-
     private List<BaseRenderer> mRenderers = new ArrayList<>(10);
 
     public GLRenderImpl(Context context, RenderModel model) {
         mContext = context;
         mModel = model;
+        mBufferManager = new GLBufferManager();
     }
 
     public void initGL() {
-        ByteBuffer vertexByteBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE * 2 * SIZEOF_FLOAT);
-        vertexByteBuffer.order(ByteOrder.nativeOrder());
-        mVertexBuffer = vertexByteBuffer.asFloatBuffer();
+        mBufferManager.create();
 
-        ByteBuffer indexByteBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE * 2 * SIZEOF_INT);
-        indexByteBuffer.order(ByteOrder.nativeOrder());
-        mIndexBuffer = indexByteBuffer.asIntBuffer();
-
-        mRenderers.add(new CompoundRenderer(mContext, mModel, mVertexBuffer, mIndexBuffer));
+        mRenderers.add(new CompoundRenderer(mContext, mModel, mBufferManager.getVertexBuffer(), mBufferManager.getIndexBuffer()));
 
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -60,6 +44,10 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
         GLES20.glDepthFunc(GLES20.GL_LESS);
 
         GLES20.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    public void destroyGL() {
+        mBufferManager.destroy();
     }
 
     public void resize(int width, int height) {
@@ -99,5 +87,10 @@ public class GLRenderImpl implements GLSurfaceView.Renderer {
         for (BaseRenderer renderer : mRenderers) {
             renderer.onDrawFrame(gl);
         }
+    }
+
+    @Override
+    public void onSurfaceDestroy() {
+        destroyGL();
     }
 }

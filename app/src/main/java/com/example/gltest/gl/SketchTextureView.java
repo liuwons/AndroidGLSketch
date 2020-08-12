@@ -2,7 +2,6 @@ package com.example.gltest.gl;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
@@ -11,7 +10,7 @@ import com.example.gltest.data.SketchProcessor;
 public class SketchTextureView extends TextureView implements TextureView.SurfaceTextureListener {
     private static final String TAG = SketchTextureView.class.getSimpleName();
 
-    private GLSurfaceView.Renderer mRenderer;
+    private GLSketchRenderer mRenderer;
     private GLThread mGLThread;
     private SketchProcessor mSketchProcessor;
 
@@ -25,7 +24,7 @@ public class SketchTextureView extends TextureView implements TextureView.Surfac
         init();
     }
 
-    public void setRender(GLSurfaceView.Renderer render) {
+    public void setRender(GLSketchRenderer render) {
         mRenderer = render;
     }
 
